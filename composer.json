@@ -1,4 +1,5 @@
 {
+	"name": "terrancewoest/baseline",
 	"autoload": {
 		"psr-4": {
             "Baseline": "framework"
