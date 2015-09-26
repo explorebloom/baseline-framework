@@ -1,0 +1,38 @@
+Baseline Framework Feature Set
+-----------------------------
+
+Content Modules
+
+	MODULES
+	- Registerable through config file and registry class.
+	- Defineable Options
+		* Slug
+		* Name
+		* Template file location
+		* Associated Category
+	- Access to all wordpress framework functions and functionality.
+	- Access to framework options
+
+	CATEGORIES
+	- Registerable through config file and registry class.
+	- Defineable Option
+		* Slug
+		* Name
+		* Default Module
+
+Global Theme Options
+	STYLING OPTIONS
+	- Automatically registered through it's own config file
+	- Is put in the customizer.
+	- Configurable
+		-
+
+	SETTING OPTIONS
+	- Automatically registered throught it's own config file.
+	- Is put in a settings page that is built with Beaver Builder
+	- Configurable
+		-
+
+	MODULE OPTIONS
+	- Automatically registered through it's own config file.
+	- Is automatically put into the customizer.
