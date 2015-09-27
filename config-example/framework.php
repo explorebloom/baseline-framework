@@ -13,7 +13,7 @@
 return array(
 
 
-	// This is the path to the location of all fo teh different content modules.
+	// This is the path to the location of all of the different content modules.
 	'modules_path' => 'Modules/Content',
 
 

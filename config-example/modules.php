@@ -13,16 +13,6 @@
 
 return array(
 
-	// The base directory where the framework will search is
-	// src/Modules/Content, so define from there.
+	// Return your array of modules.
 
-	// All of the navigation content modules.
-	'Nav\DefaultNav',
-	'Nav\CoolNav',
-	'Nav\BoldNav',
-
-	// All of the header content modules.
-	'Header\DefaultHeader',
-	'Header\CoolHeader',
-	'Header\BoldHeader',
 );

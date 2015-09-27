@@ -1,4 +1,8 @@
 <?php
+// Start auto loading...
+require 'vendor/autoload.php';
+
+use Baseline\BaselineFramework;
 
 /*
 |--------------------------------------------------------------------------
@@ -11,5 +15,11 @@
 |
 */
 
-// Bring in autoloading
-include dirname(dirname(__FILE__)) . 'vendor/autoload.php';
+/**
+ * Initializes the framework with path to your config directory.
+ *
+ * @param string $config_path
+ */
+function baseline_init($config_path) {
+	return BaselineFramework::getInstance($config_path);
+}

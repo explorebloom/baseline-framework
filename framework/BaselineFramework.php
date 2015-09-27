@@ -3,8 +3,7 @@ namespace Baseline;
 
 use Baseline\Core\Content;
 use Baseline\Core\Settings;
-use Baseline\Helper\IsSingleton;
-use Baseline\Services\Customizer;
+use Baseline\Core\Registrar;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,9 +16,17 @@ use Baseline\Services\Customizer;
 |
 */
 
-class Baseline {
+class BaselineFramework {
 
+	/**
+	 * This class is a singleton instance.
+	 */
 	use IsSingleton;
+
+	/**
+	 * Instance of the config class that handles fetching information from the config files.
+	 */
+	protected $config;
 
 	/**
 	 * Instance of the registrar class that handles registering new settings.
@@ -38,17 +45,21 @@ class Baseline {
 
 
 	/**
-	 * Instantiates the framework
+	 * Bootstraps the Baseline Framework
 	 */
-	private function __construct()
+	private function __construct($config_path)
 	{
-		// Initializes and registers all of the different content modules for the framework
-		$this->content = WestcoContent::getInstance();
+		// Initializes the Config and sets up a connection to the config files.
+		$this->config = Config::getInstance($config_path);
 
-		// Initializes and registers all of the different settings for the framework
-		$this->settings = WestcoSettings::getInstance();
+		// Initializes the main class responsible for registering all options of the Framework.
+		$this->registrar = Registrar::getInstance();
+
+		// Initializes the main class responsible for displaying content.
+		$this->content = Content::getInstance();
+
+		// Initializes and main class used for getting and working with settings.
+		$this->settings = Settings::getInstance();
 	}
 
 }
-
-WestcoInit::getInstance();

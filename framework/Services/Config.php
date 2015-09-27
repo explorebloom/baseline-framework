@@ -15,9 +15,10 @@ class Config {
 	/**
 	 * Public function that instantiates the class and sets up the configuration path.
 	 */
-	private function __construct()
+	private function __construct($config_path)
 	{
-		$this->config_path = dirname(__FILE__) . '/Config/';
+		$this->config_path = $config_path;
+		$this->confirmConfigFiles();
 	}
 
 	/**
@@ -87,5 +88,36 @@ class Config {
 	{
 		$data = include $this->config_path . $file_name . '.php';
 		return $data;
+	}
+
+	/**
+	 * Function that finds all config files or kills the framework.
+	 */
+	private function confirmConfigFiles()
+	{
+		// Set the variables.
+		$path = $this->config_path;
+		$missing = array();
+		$files = array(
+			'categories.php',
+			'customizer.php',
+			'framework.php',
+			'modules.php',
+			'options.php',
+		);
+
+		// Check for the files
+		foreach ($files as $file) {
+			if(!file_exists($path . '/' . $file)) {
+				$missing[] = $file;
+			}
+		}
+
+		// If any missing die.
+		if (count($missing)) {
+			$missing_files = implode(', ' , $missing);
+			die('ERROR: Could not find the following config files. [' . $missing_files . ']');
+		}
+
 	}
 }

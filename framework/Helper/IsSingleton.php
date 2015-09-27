@@ -13,9 +13,13 @@ trait IsSingleton {
 	 *
 	 * @return Westco_Support
 	 */
-	public static function getInstance() {
+	public static function getInstance($param = null) {
 	    if (!self::$instance) {
-	        self::$instance = new self;
+	    	if ($param) {
+	        	self::$instance = new self($param);
+	    	} else {
+	    		self::$instance = new self;
+	    	}
 	    }
 	    return self::$instance;
 	}

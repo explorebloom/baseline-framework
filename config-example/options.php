@@ -12,13 +12,6 @@
 
 return array(
 
-
-	// If there is no global option set for the theme these defaults will be used.
-	'category_customizer_panel' => 'Theme Layout',
-	'theme_options_panel' => 'Theme Styling',
-
-	// For everything that doesn't have a setting saved in the database these will be used.
-	'theme_options'	=> array(
-		'main_accent_color'		=> '#dddddd'
-	),
+	// Return your array of options.
+	
 );
