@@ -4,6 +4,7 @@ namespace Baseline;
 use Baseline\Core\Content;
 use Baseline\Core\Settings;
 use Baseline\Core\Registrar;
+use Baseline\Helper\IsSingleton;
 
 /*
 |--------------------------------------------------------------------------
