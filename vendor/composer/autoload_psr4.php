@@ -6,5 +6,5 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
-    'Baseline' => array($baseDir . '/framework'),
+    'Baseline\\' => array($baseDir . '/framework'),
 );
