@@ -3,7 +3,7 @@ namespace Baseline\Services;
 
 use Baseline\Core\Content;
 use Baseline\Core\Settings;
-use Baseline\Services\Config;
+use Baseline\Core\Config;
 
 class TemplateComposer {
 

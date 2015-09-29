@@ -1,7 +1,7 @@
 <?php
 namespace Baseline\Registrars;
 
-use Baseline\Services\Config;
+use Baseline\Core\Config;
 use Baseline\Helper\IsSingleton;
 use Baseline\Contracts\ContentModule;
 use Baseline\Contracts\ContentModuleCategory;
@@ -17,7 +17,7 @@ use Baseline\Contracts\ContentModuleCategory;
 |
 */
 
-class ModuleRegistrar {
+class ModulesRegistrar {
 
 	use IsSingleton;
 
@@ -29,14 +29,18 @@ class ModuleRegistrar {
 	protected $config;
 
 	/**
-	 * Namespace of the content module categories.
+	 * The path to the module files.
+	 * 
+	 * @var string
 	 */
-	protected $categories_namespace;
+	protected $module_path;
 
 	/**
-	 * Namespace of the content modules.
+	 * The path to the module category files.
+	 *
+	 * @var string
 	 */
-	protected $modules_namespace;
+	protected $category_path;
 
 	/**
 	 * An associative array of all of the different content module categories and their settings.
@@ -53,74 +57,95 @@ class ModuleRegistrar {
 	protected $registered_modules = [];
 
 	/**
-	 * Registers all fo the modules that will be used within the theme.
+	 * An associative array of all categories with their content modules
+	 *
+	 * @var array
+	 */
+	protected $registered_items = [];
+	/**
+	 * Constructs the class and sets all of it's properties.
 	 */
 	private function __construct()
 	{
 		// Set properties
-		$this->config = WestcoConfig::getInstance();
-		$this->categories_namespace = $this->config->getFrameworkConfig('module_categories_namespace');
-		$this->modules_namespace = $this->config->getFrameworkConfig('modules_namespace');
+		$this->config = Config::getInstance();
+		$this->modules_path = $this->config->getFrameworkConfig('modules_path');
+		$this->categories_path = $this->config->getFrameworkConfig('module_categories_path');
 
-		// Register Categories and Modules
+	}
+
+	/**
+	 * Registers all of the modules and module categories from the config files.
+	 */
+	public function registerFromConfig()
+	{
 		$this->registerLocalCategories();
 		$this->registerLocalModules();
-		// $this->registerChildThemeCategories();
-		// $this->registerChildThemeModules();
 	}
 
 	/**
-	 * Returns all of the settings for a specific category or all of the categories.
-	 * 
-	 * @param string $key
-	 * @return array
+	 * Registers all of the child theme modules and categories
 	 */
-	public function categoryOptions($key = null)
+	public function registerOutsideModules()
 	{
-		if ($key && $this->categoryExists($key)) {
-			return $this->registered_categories[$key];
-		}
-		return $this->registered_categories;
+		// Register them here.
 	}
 
 	/**
-	 * Returns all of the settings for a specific module or for all modules.
-	 * 
-	 * @param string $key
-	 * @return array
+	 * Getter function for getting all of the registered modules
 	 */
-	public function moduleOptions($key = null)
+	public function getRegisteredModules()
 	{
-		if ($key && $this->moduleExists($key)) {
-			return $this->registered_modules[$key];
-		}
 		return $this->registered_modules;
 	}
 
 	/**
-	 * Checks if a content module exists or not.
-	 *
-	 * @param string $module_slug
+	 * Getter function for returning an array of categories and their content modules.
 	 */
-	public function moduleExists($module_slug)
+	public function getRegisteredItems()
 	{
-		if (array_key_exists($module_slug, $this->registered_modules)) {
-			return true;
+		if ($this->registered_items) {
+			return $this->registered_items;
 		}
-		return false;
+		return $this->makeRegisteredItems();
 	}
 
 	/**
-	 * Checks if a content module category exists or not.
-	 *
-	 * @param string $module_slug
+	 * Makes an associative array that holds all of the registered categories and their modules.
 	 */
-	public function categoryExists($category_slug)
+	private function makeRegisteredItems()
 	{
-		if (array_key_exists($category_slug, $this->registered_categories)) {
-			return true;
+		// Shorten them for now.
+		$categories = $this->registered_categories;
+		$modules = $this->registered_modules;
+		$items = $this->registered_items;
+
+		foreach($modules as $module => $options) {
+			$category = $options['category'];
+			
+			// Does the category exist?
+			if (!$categories[$category]) {
+				continue;
+			}
+
+			// Is the category already in the registered items?
+			if ($items[$category]) {
+
+				// Add the item to the existing category's modules.
+				$items[$category]['modules'][$module] = $options;
+				continue;
+			}
+
+			// Add the category to the array first.
+			$items[$category] = $categories[$category];
+
+			// Then add the module to the category.
+			$items[$category]['modules'][$module] = $options;
 		}
-		return false;
+
+		// Add the items to the property and return it.
+		$this->registered_items = $items;
+		return $this->registered_items;
 	}
 
 	/**
@@ -148,7 +173,7 @@ class ModuleRegistrar {
 	/**
 	 * Registers all of the child theme module categories from the given action.
 	 */
-	private function registerChildThemeCategories()
+	private function registerExternalCategories()
 	{
 		// Bring in child theme categories.
 	}
@@ -156,7 +181,7 @@ class ModuleRegistrar {
 	/**
 	 * Registers all of the child theme modules based from the given action.
 	 */
-	private function registerChildThemeModules()
+	private function registerExternalModules()
 	{
 		// Bring in child theme modules.
 	}
@@ -167,8 +192,12 @@ class ModuleRegistrar {
 	private function validateAndRegisterCategory($class_name)
 	{
 		// Create the category class.
-		$category_class = $this->categories_namespace . $class_name;
-		$category = new $category_class;
+		$category_path = get_template_directory() . '/' . $this->categories_path . '/' . $class_name . '.php';
+		include_once($category_path);
+
+		// Make sure that if they provided a directory, only the class name is given.e
+		$class_name = end(explode('/', $class_name));
+		$category = new $class_name;
 
 		// Is the category is an instance of the category contract?
 		if (!$category instanceof ContentModuleCategory) {
@@ -185,14 +214,18 @@ class ModuleRegistrar {
 	private function validateAndRegisterModule($class_name)
 	{
 		// Create the module class.
-		$module_class = $this->modules_namespace . $class_name;
-		$module = new $module_class;
+		$module_path = get_template_directory() . '/' . $this->modules_path . '/' . $class_name . '.php';
+		include_once($module_path);
+
+		// Make sure that if they provided a directory only the class name is taken.
+		$class_name = end(explode('/', $class_name));
+		$module = new $class_name;
 		
 		// Is the category is an instance of the category contract?
 		if (!$module instanceof ContentModule) {
 			return false;
 		}
-		// Register the Category
+		// Register the Modules
 		$this->registered_modules[$module->configuration()['slug']] = $module->configuration();
 	}
 

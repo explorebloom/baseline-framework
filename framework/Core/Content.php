@@ -2,7 +2,7 @@
 namespace Baseline;
 
 use Baseline\Core\Settings;
-use Baseline\Services\Config;
+use Baseline\Core\Config;
 use Baseline\Helper\IsSingleton;
 use Baseline\Services\TemplateComposer;
 use Baseline\Registrars\ModuleRegistrar;

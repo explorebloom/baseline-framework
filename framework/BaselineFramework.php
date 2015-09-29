@@ -1,6 +1,7 @@
 <?php
 namespace Baseline;
 
+use Baseline\Core\Config;
 use Baseline\Core\Content;
 use Baseline\Core\Settings;
 use Baseline\Core\Registrar;
@@ -57,10 +58,31 @@ class BaselineFramework {
 		$this->registrar = Registrar::getInstance();
 
 		// Initializes the main class responsible for displaying content.
-		$this->content = Content::getInstance();
+		// $this->content = Content::getInstance();
 
 		// Initializes and main class used for getting and working with settings.
-		$this->settings = Settings::getInstance();
+		// $this->settings = Settings::getInstance();
+		
+	}
+
+	public function config()
+	{
+		return $this->config;
+	}
+
+	public function registrar()
+	{
+		return $this->registrar;
+	}
+
+	public function content()
+	{
+		return $this->content;
+	}
+
+	public function settings()
+	{
+		return $this->settings;
 	}
 
 }

@@ -1,8 +1,6 @@
 <?php
-namespace Baseline\Settings;
+namespace Baseline\Services;
 
-use Baseline\Services\Config;
-use Baseline\Helper\IsSingleton;
 use Baseline\Helper\ValidatesCustomizerOptions;
 /*
 |--------------------------------------------------------------------------
@@ -17,21 +15,7 @@ use Baseline\Helper\ValidatesCustomizerOptions;
 
 class Customizer {
 
-	use IsSingleton, ValidatesCustomizerOptions;
-
-	/**
-	 * Holds the array of customizer objects from the config file.
-	 *
-	 * @var array
-	 */
-	protected $customizer_config;
-
-	/**
-	 * An array that holds the storage type for theme settings and content module settings.
-	 *
-	 * @var array
-	 */
-	protected $storage_type;
+	use ValidatesCustomizerOptions;
 
 	/**
 	 * This is the customizer object that gets passed to the function that is registered by the 'customize_register' action
@@ -39,39 +23,6 @@ class Customizer {
 	 * @var object
 	 */
 	protected $wp_customize;
-
-	/**
-	 * Instantiates our class and begins registering customizer fields.
-	 */
-	private function __construct()
-	{
-		// Create and instance of the WestcoConfig class.
-		$config = WestcoConfig::getInstance();
-
-		// Get all of the customizer data.
-		$this->customizer_config = $config->getCustomizerConfig();
-
-		// Set storage type.
-		$this->storage_type = array(
-			'theme_settings' => $config->getFrameworkConfig('save_theme_settings_as'),
-			'module_settings' => $config->getFrameworkConfig('save_module_settings_as'),
-		);
-
-		// Register all theme options
-		add_action('customize_register', array($this, 'registerThemeSettings'));
-	}
-
-	/**
-	 * Main function for registering all of the customizer fields
-	 *
-	 * @param object $wp_customize
-	 */
-	public function registerThemeSettings($wp_customize)
-	{
-		// Set WordPress's customizer option to a property.
-		$this->wp_customize = $wp_customize;
-		$this->register($this->customizer_config, $this->storage_type['theme_settings']);
-	}
 
 
 	/**
@@ -81,8 +32,11 @@ class Customizer {
 	 * @param string $type
 	 * @param string $parent
 	 */
-	private function register($objects, $storage_type, $parent = null)
+	public function register($objects, $storage_type, $parent = null, $wp_customize = null)
 	{
+		if ($wp_customize) {
+			$this->wp_customize = $wp_customize;
+		}
 		// Loop over the array of objects and register them.
 		foreach($objects as $id => $options) {
 			
@@ -115,6 +69,7 @@ class Customizer {
 
 		// Register the Panel
 		$this->wp_customize->add_panel($id, $validated_options);
+		var_dump(array('Panel: ' . $id => $validated_options));
 
 		// Register it's contents
 		$this->register($options['contents'], $storage_type, $id);
@@ -135,6 +90,7 @@ class Customizer {
 
 		// Register the section
 		$this->wp_customize->add_section($id, $validated_options);
+		var_dump(array('Section: ' . $id => $validated_options));
 
 		// Register it's contents
 		$this->register($options['contents'], $storage_type, $id);
@@ -153,6 +109,7 @@ class Customizer {
 
 		// Register the Setting
 		$this->wp_customize->add_setting($id, $validated_options);
+		var_dump(array('Setting: ' . $id => $validated_options));
 
 	}
 
@@ -175,6 +132,7 @@ class Customizer {
 
 			// Register the control
 			$this->wp_customize->add_control(new \WP_Customize_Color_Control($this->wp_customize, $id, $validated_options));
+			var_dump(array('Control: ' . $id => $validated_options));
 
 			return;
 		}
@@ -187,12 +145,15 @@ class Customizer {
 
 			// Register the control
 			$this->wp_customize->add_control(new \WP_Customize_Media_Control($this->wp_customize, $id, $validated_options));
+			var_dump(array('Control: ' . $id => $validated_options));
 
 			return;
 		}
 
 		// All other types
 		$this->wp_customize->add_control($id, $validated_options);
+		var_dump(array('Control: ' . $id => $validated_options));
+
 	}
 
 	/**

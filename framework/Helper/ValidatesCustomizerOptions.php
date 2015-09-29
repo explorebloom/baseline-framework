@@ -28,6 +28,7 @@ trait ValidatesCustomizerOptions {
 			'label',
 			'description',
 			'input_attr',
+			'choices',
 			'active_callback',
 			'mime_type',
 		),

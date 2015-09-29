@@ -1,7 +1,7 @@
 <?php
 namespace Baseline;
 
-use Baseline\Services\Config;
+use Baseline\Core\Config;
 use Baseline\Helper\IsSingleton;
 use Baseline\Services\WestcoCustomizer;
 

@@ -1,5 +1,5 @@
 <?php
-namespace Baseline\Services;
+namespace Baseline\Core;
 
 use Baseline\Helper\IsSingleton;
 
@@ -86,7 +86,7 @@ class Config {
 	 */
 	private function getConfigData($file_name)
 	{
-		$data = include $this->config_path . $file_name . '.php';
+		$data = include $this->config_path . '/' .$file_name . '.php';
 		return $data;
 	}
 
