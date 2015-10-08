@@ -9,7 +9,9 @@ namespace Baseline\Helper;
 | This trait adds the ability for a user to rather than calling getSetModule()
 | and passing in the category slug they can just call getFooBar() and it
 | will return getSetModule('foo-bar'). Below are all the requirenments.
-| 
+|
+|--------------------------------------------------------------------------
+|
 | 1. Function must begin with get, so getFooBar() will work, and likewise
 |	 calling iReallyWantFooBar() will not work.
 |

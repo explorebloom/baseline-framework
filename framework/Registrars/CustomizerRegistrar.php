@@ -4,7 +4,7 @@ namespace Baseline\Registrars;
 use Baseline\Core\Config;
 use Baseline\Core\Registrar;
 use Baseline\Helper\IsSingleton;
-use Baseline\Services\Customizer;
+use Baseline\Services\Customizer\MakesCustomizerFields;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,6 +23,11 @@ class CustomizerRegistrar {
 	use IsSingleton;
 
 	/**
+	 * Holds an instance of the registrar class
+	 */
+	protected $registrar;
+
+	/**
 	 * Holds an instance of the Customizer Service Class
 	 */
 	protected $customizer;
@@ -31,6 +36,11 @@ class CustomizerRegistrar {
 	 * Holds all the config data for the custoimzer.
 	 */
 	protected $customizer_config;
+
+	/**
+	 * Holds the prefix for everything that goes to the database.
+	 */
+	protected $setting_prefix;
 
 	/**
 	 * An array of storage types for different type of settings.
@@ -49,37 +59,43 @@ class CustomizerRegistrar {
 	 */
 	protected $registered_option_settings;
 
-	// Builds up the class and sets all of it's properties.
-	private function __construct($registrar)
+	/**
+	 * Constructs the class and sets all properties.
+	 */
+	private function __construct()
 	{
-		// Core Registrar Class
-		$this->registrar = $registrar;
-		
 		// Main Config Instance
 		$config = Config::getInstance();
 
+		// Core Registrar Class
+		$this->registrar = Registrar::getInstance();
+
+		// Customizer Service Class
+		$this->customizer = MakesCustomizerFields::getInstance();
 
 		// Customizer settings from the config file.
 		$this->customizer_config = $config->getCustomizerConfig();
+
+		// Prefix that will be used for everything in the database.
+		$this->setting_prefix = $config->getFrameworkConfig('setting_prefix');
 
 		// Storage type for different settings.
 		$this->storage_type = array(
 			'theme_settings' => $config->getFrameworkConfig('save_theme_settings_as'),
 			'module_settings' => $config->getFrameworkConfig('save_module_settings_as'),
 		);
-
-		// Customizer Service Class
-		$this->customizer = new Customizer;
-
 	}
 
 	/**
 	 * Registers all of the different settings from the config files.
 	 */
-	public function registerSettings()
+	public function register()
 	{
-		// Register all of the theme customizer settings.
+		// Register all of the registered customizer settings.
 		add_action('customize_register', array($this, 'registerCustomizerSettings'));
+
+		// Register all of the external customizer settings.
+		add_action('customize_register', array($this, 'additionalCustomizerSettings'));
 	}
 
 	/**
@@ -89,19 +105,38 @@ class CustomizerRegistrar {
 	 */
 	public function registerCustomizerSettings($wp_customize)
 	{
-		// All theme settings from the customizer config file.
-		echo '<pre>';
-		$this->customizer->register($this->customizer_config, $this->storage_type['theme_settings'], null, $wp_customize);
-		echo '</pre>';
+		// Register all theme settings from the customizer config file.
+		$this->customizer->register(
+			$this->customizer_config,
+			$this->storage_type['theme_settings'],
+			null,
+			$this->setting_prefix,
+			$wp_customize
+		);
 
 		// All content modules.
-		echo '<pre>';
-		var_dump($modules = $this->registrar->getModulesForCustomizer());
+		$modules = $this->registrar->getModulesForCustomizer();
 		foreach($modules as $module => $options) {
-			$this->customizer->register($modules, $this->storage_type['module_settings'], $options['section'], $wp_customize);
+			$this->customizer->register(
+				array($module => $options), 
+				$this->storage_type['module_settings'],
+				$options['section'],
+				$this->setting_prefix,
+				$wp_customize
+			);
 		}
-		echo '</pre>';
-		// $this->customizer->register($modules, $this->storage_type['module_settings'], )s
 	}
 
+	/**
+	 * Main function for registering all of the of the customizer settings from the theme.
+	 *
+	 * @param $wp_customize.
+	 */
+	public function additionalCustomizerSettings() {
+
+		// First overwrite customizer settings with modifications made by the theme.
+
+		// Then overwrite customizer settings with modifications made by a child theme.
+
+	}
 }

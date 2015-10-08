@@ -1,11 +1,11 @@
 <?php
 namespace Baseline\Core;
 
-use Baseline\Services\Options;
 use Baseline\Helper\IsSingleton;
 use Baseline\Registrars\ModulesRegistrar;
+use Baseline\Registrars\SettingsRegistrar;
 use Baseline\Registrars\CustomizerRegistrar;
-use Baseline\Helper\PrepsModulesForCustomizer;
+use Baseline\Helper\RegistrarHelperFunctions;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,8 +21,8 @@ use Baseline\Helper\PrepsModulesForCustomizer;
 
 class Registrar {
 	
-	// Make this class a singleton instance.	
-	use IsSingleton, PrepsModulesForCustomizer;
+	// Helper classes.	
+	use IsSingleton, RegistrarHelperFunctions;
 
 	/**
 	 * Holds and instance of the customizer registrar.
@@ -35,28 +35,19 @@ class Registrar {
 	protected $modules;
 
 	/**
-	 * Constructs up the class and sets all of the properties.
-	 */
-	private function __construct()
-	{
-	
-		// Get together all our Registrars.
-		$this->modules = ModulesRegistrar::getInstance();
-		$this->customizer = CustomizerRegistrar::getInstance($this);
-	
-		// Start registering things.
-		$this->init();
-	}
-
-	/**
 	 * Registers everythig from config and sets up actions for child theme extension;
 	 */
-	private function init()
+	public function init()
 	{
+		$this->modules = ModulesRegistrar::getInstance();
+		$this->customizer = CustomizerRegistrar::getInstance();
+		$this->settings = SettingsRegistrar::getInstance();
+		
 		// Register all the different content modules in the config file.
-		$this->modules->registerFromConfig();
+		$this->modules->register();
 
 		// Register all the different settings from the config file.
-		$this->customizer->registerSettings();
+		$this->customizer->register();
 	}
+
 }

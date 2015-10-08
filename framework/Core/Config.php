@@ -12,12 +12,13 @@ class Config {
 	 */
 	protected $config_path;
 
-	/**
-	 * Public function that instantiates the class and sets up the configuration path.
-	 */
-	private function __construct($config_path)
+
+	public function __construct($config_path)
 	{
+		// Set the config path property.
 		$this->config_path = $config_path;
+
+		// Check to see if everything is there.
 		$this->confirmConfigFiles();
 	}
 

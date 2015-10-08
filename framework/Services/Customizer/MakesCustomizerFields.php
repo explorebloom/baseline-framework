@@ -1,7 +1,10 @@
 <?php
-namespace Baseline\Services;
+namespace Baseline\Services\Customizer;
 
-use Baseline\Helper\ValidatesCustomizerOptions;
+use Baseline\Core\Config;
+use Baseline\Helper\IsSingleton;
+use Baseline\Services\Customizer\SanitizesCustomizerFields;
+use Baseline\Services\Customizer\ValidatesCustomizerOptions;
 /*
 |--------------------------------------------------------------------------
 | Framework Customizer Class
@@ -13,9 +16,24 @@ use Baseline\Helper\ValidatesCustomizerOptions;
 |
 */
 
-class Customizer {
+class MakesCustomizerFields {
 
-	use ValidatesCustomizerOptions;
+	use IsSingleton;
+
+	/**
+	 * This holds an instanace of the class that sanitizes the customizer fields.
+	 */
+	public $sanitizer;
+
+	/**
+	 * This holds an instance of the class the validates the customizer field options.
+	 */
+	public $validator;
+
+	/**
+	 * This holds an instance of the class that handles Baseline's Custom Callbacks for customizer field options.
+	 */
+	public $callbacks;
 
 	/**
 	 * This is the customizer object that gets passed to the function that is registered by the 'customize_register' action
@@ -26,17 +44,35 @@ class Customizer {
 
 
 	/**
+	 * This is the prefix that comes from the framework config file that all settings should be registered with.
+	 *
+	 * @var string
+	 */
+	protected $setting_prefix;
+
+	/**
 	 * This is the main function that gets called every time an array of options needs to be registered.
 	 *
 	 * @param array $objects
 	 * @param string $type
 	 * @param string $parent
 	 */
-	public function register($objects, $storage_type, $parent = null, $wp_customize = null)
+	public function register($objects, $storage_type, $parent = null, $prefix = null, $wp_customize = null)
 	{
+		// Get the helper classes.
+		$this->sanitizer = SanitizesCustomizerFields::getInstance();
+		$this->validator = ValidatesCustomizerOptions::getInstance();
+
+		// Set wp_customize as property for first run through.
 		if ($wp_customize) {
 			$this->wp_customize = $wp_customize;
 		}
+
+		// Set the prefix as a property if it 
+		if ($prefix) {
+			$this->setting_prefix = $prefix;
+		}
+
 		// Loop over the array of objects and register them.
 		foreach($objects as $id => $options) {
 			
@@ -55,7 +91,8 @@ class Customizer {
 				$this->registerSetting($storage_type, $id, $options);
 				$this->registerControl($id, $options, $parent);
 			}
-			// Nothing else is allowed at this level.
+
+			// Not enough stuff was passed.
 		}
 	}
 
@@ -64,12 +101,15 @@ class Customizer {
 	 */
 	private function registerPanel($storage_type, $id, $options)
 	{
+		// Add the setting prefix.
+		$id = $this->setting_prefix . $id;
+
 		// Validate the options
-		$validated_options = $this->parseOptions('panel', $options);
+		$validated_options = $this->validator->validate('panel', $options);
 
 		// Register the Panel
 		$this->wp_customize->add_panel($id, $validated_options);
-		var_dump(array('Panel: ' . $id => $validated_options));
+		// var_dump(array('Panel: ' . $id => $validated_options));
 
 		// Register it's contents
 		$this->register($options['contents'], $storage_type, $id);
@@ -80,8 +120,11 @@ class Customizer {
 	 */
 	private function registerSection($storage_type, $id, $options, $panel)
 	{
+		// Add the setting prefix.
+		$id = $this->setting_prefix . $id;
+		
 		// Validate the options
-		$validated_options = $this->parseOptions('section', $options);
+		$validated_options = $this->validator->validate('section', $options);
 
 		// Attach it to a panel if provided.
 		if ($panel) {
@@ -90,7 +133,7 @@ class Customizer {
 
 		// Register the section
 		$this->wp_customize->add_section($id, $validated_options);
-		var_dump(array('Section: ' . $id => $validated_options));
+		// var_dump(array('Section: ' . $id => $validated_options));
 
 		// Register it's contents
 		$this->register($options['contents'], $storage_type, $id);
@@ -101,16 +144,19 @@ class Customizer {
 	 */
 	private function registerSetting($storage_type, $id, $options)
 	{
+		// Add the setting prefix.
+		$id = $this->setting_prefix . $id;
+		
 		// Validate the options
-		$validated_options = $this->parseOptions('setting', $options);
+		$validated_options = $this->validator->validate('setting', $options);
 
 		// Add in the storage type
 		$validated_options['type'] = $storage_type;
 
 		// Register the Setting
 		$this->wp_customize->add_setting($id, $validated_options);
-		var_dump(array('Setting: ' . $id => $validated_options));
 
+		// var_dump(array('Setting: ' . $id => $validated_options));
 	}
 
 	/**
@@ -118,12 +164,15 @@ class Customizer {
 	 */
 	private function registerControl($id, $options, $section)
 	{
+		// Add the setting prefix.
+		$id = $this->setting_prefix . $id;
+		
 		// Validate the options
-		$validated_options = $this->parseOptions('control', $options);
+		$validated_options = $this->validator->validate('control', $options);
 
 		// Add it to it's given section
 		$validated_options['section'] = $section;
-		
+
 		// Is it a color type?
 		if ($options['type'] === 'color') {
 
@@ -132,7 +181,7 @@ class Customizer {
 
 			// Register the control
 			$this->wp_customize->add_control(new \WP_Customize_Color_Control($this->wp_customize, $id, $validated_options));
-			var_dump(array('Control: ' . $id => $validated_options));
+			// var_dump(array('Control: ' . $id => $validated_options));
 
 			return;
 		}
@@ -145,45 +194,14 @@ class Customizer {
 
 			// Register the control
 			$this->wp_customize->add_control(new \WP_Customize_Media_Control($this->wp_customize, $id, $validated_options));
-			var_dump(array('Control: ' . $id => $validated_options));
+			// var_dump(array('Control: ' . $id => $validated_options));
 
 			return;
 		}
 
 		// All other types
 		$this->wp_customize->add_control($id, $validated_options);
-		var_dump(array('Control: ' . $id => $validated_options));
-
-	}
-
-	/**
-	 * Parses the options given into an array of valid options that will work for wordpress.
-	 *
-	 * @param string $object_type
-	 * @param associative array $options
-	 *
-	 * @return associative array
-	 */
-	private function parseOptions($object_type, $options)
-	{
-		// Gets all the valid options for the object type.
-		$allowed_options = $this->valid_customizer_options[$object_type];
-
-		// Put valid options in here.
-		$validated_options = array();
-
-		// Loop over the options and only take what is allowed.
-		foreach($options as $option => $value) {
-			
-			// Is the option allowed?
-			if (in_array($option, $allowed_options)) {
-				$validated_options[$option] = $value;
-			}
-
-		}
-
-		// Return the validated options.
-		return $validated_options;
+		// var_dump(array('Control: ' . $id => $validated_options));
 	}
 
 }

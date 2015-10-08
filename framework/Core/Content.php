@@ -1,11 +1,10 @@
 <?php 
-namespace Baseline;
+namespace Baseline\Core;
 
 use Baseline\Core\Settings;
-use Baseline\Core\Config;
 use Baseline\Helper\IsSingleton;
+use Baseline\Helper\GetsCurrentPage;
 use Baseline\Services\TemplateComposer;
-use Baseline\Registrars\ModuleRegistrar;
 use Baseline\Helper\HelperModuleQueries;
 
 /*
@@ -24,42 +23,40 @@ class Content {
 	use IsSingleton, HelperModuleQueries;
 
 	/**
-	 * Protected property containing an instance of the ModuleRegistrar class
+	 * An instance of the Settings class
 	 *
-	 * @var Framework\Content\ModuleRegistrar
-	 */
-	protected $module_registrar;
-
-	/**
-	 * Protected property containing an instance of the Settings class
-	 *
-	 * @var Westco\Framework\WestcoSettings
+	 * @var Baseline\Core\Settings
 	 */
 	protected $settings;
 
 	/**
-	 * Protected property containing an instance of the WestcoConfig class
+	 * An array of all of the registered module categories and their modules and all their options.
 	 *
-	 * @var Westco\Framework\WestcoConfig
+	 * @var Baseline\Core\Registrar
 	 */
-	protected $config;
+	protected $registered_modules;
 
 	/**
-	 * Path to the location of modules.
+	 * An array of all of the registered modules and their options.
+	 *
+	 * @var array
 	 */
-	protected $modules_path;
+	protected $modules_list;
 
 	/**
 	 * Sets up the class by registering all of the modules and getting all of their options.
 	 */
 	private function __construct()
 	{
-		$this->config = WestcoConfig::getInstance();
-		$this->settings = WestcoSettings::getInstance();
-		$this->module_registrar = ModuleRegistrar::getInstance();
-		$this->modules_path = $this->config->getFrameworkConfig('modules_path');
-	}
+		// Set all the registerd modules as a property
+		$registrar = Registrar::getInstance();
+		$this->registered_modules = $registrar->getRegisteredModules();
+		$this->modules_list = $registrar->listRegisteredModules();
+		$this->currentPage = new GetsCurrentPage;
 
+		// Core Settings class
+		$this->settings = Settings::getInstance();
+	}
 
 	/**
 	 * Returns the content for a specific module or false if it doesnt exist.
@@ -71,19 +68,12 @@ class Content {
 	public function getModule($module_slug)
 	{
 		// Does the given module exist?
-		if (!$this->module_registrar->moduleExists($module_slug)) {
+		if (!$this->moduleExists($module_slug)) {
 			return false;
 		}
 
 		// Get all the module's options
-		$module_options = $this->module_registrar->moduleOptions($module_slug);
-
-		$category = $module_options['category'];
-		$template_path = $module_options['template_path'];
-		$name = $module_options['slug'];
-
-		// Get the module's template file.
-		$file_slug = $this->modules_path . $template_path . $category;
+		$module_options = $this->modules_list[$module_slug];
 
 		// returns the content of the template file.
 		return new TemplateComposer($module_options);
@@ -98,15 +88,43 @@ class Content {
 	public function getModuleFor($category_slug)
 	{
 		// Does the given category exist?
-		if (!$this->module_registrar->categoryExists($category_slug)) {
+		if (!$this->categoryExists($category_slug)) {
 			return false;
 		}
 
-		// Get the set module for the category
-		$module = $this->settings->getModuleFor($category_slug);
 
-		// Return the content of that specific module
-		return $this->getModule($module);
+		// Then get the module from the settings.
+		$set_module = $this->settings->get($category_slug);
+
+		// If something is set return it.
+		if ($set_module != 'not_set') {
+			return $this->getModule($set_module);
+		}
+
+		// If it isn't set then get the default
+		$category_options = $this->registered_modules[$category_slug];
+		return $this->getModule($category_options['default']);
 	}
 
+	/**
+	 * Checks to see if a module exists
+	 */
+	public function moduleExists($module_slug)
+	{
+		if ($this->modules_list[$module_slug]) {
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Checks to see if a module category exists
+	 */
+	public function categoryExists($category_slug)
+	{
+		if ($this->registered_modules[$category_slug]) {
+			return true;
+		}
+		return false;
+	}
 }

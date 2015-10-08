@@ -65,36 +65,33 @@ class ModulesRegistrar {
 	/**
 	 * Constructs the class and sets all of it's properties.
 	 */
+
 	private function __construct()
 	{
 		// Set properties
 		$this->config = Config::getInstance();
 		$this->modules_path = $this->config->getFrameworkConfig('modules_path');
 		$this->categories_path = $this->config->getFrameworkConfig('module_categories_path');
-
 	}
 
 	/**
 	 * Registers all of the modules and module categories from the config files.
 	 */
-	public function registerFromConfig()
+	public function register()
 	{
+		// First register all of the configuration files.
 		$this->registerLocalCategories();
 		$this->registerLocalModules();
-	}
 
-	/**
-	 * Registers all of the child theme modules and categories
-	 */
-	public function registerOutsideModules()
-	{
-		// Register them here.
+		// Then regiser any additional things that need to overwrite.
+		$this->registerAdditionalCategoires();
+		$this->registerAdditionalModules();
 	}
 
 	/**
 	 * Getter function for getting all of the registered modules
 	 */
-	public function getRegisteredModules()
+	public function listRegisteredModules()
 	{
 		return $this->registered_modules;
 	}
@@ -102,12 +99,50 @@ class ModulesRegistrar {
 	/**
 	 * Getter function for returning an array of categories and their content modules.
 	 */
-	public function getRegisteredItems()
+	public function getRegisteredModules()
 	{
 		if ($this->registered_items) {
 			return $this->registered_items;
 		}
 		return $this->makeRegisteredItems();
+	}
+
+	/**
+	 * Registeres all of the different local Module categories from the config file.
+	 */
+	private function registerLocalCategories()
+	{
+		$category_array = $this->config->getModuleCategories();
+		foreach($category_array as $category_class_name) {
+			$this->validateAndRegisterCategory($category_class_name);
+		}
+	}
+
+	/**
+	 * Registers all of the the local modules based off of the modules config file.
+	 */
+	private function registerLocalModules()
+	{
+		$modules_array = $this->config->getModules();
+		foreach($modules_array as $module_class_name) {
+			$this->validateAndRegisterModule($module_class_name);
+		}
+	}
+
+	/**
+	 * Registers all of the oustide registered theme and child them modules.
+	 */
+	private function registerAdditionalModules()
+	{
+		// Register them here in the future.
+	}
+
+	/**
+	 * Registeres all of the outside registered theme and child theme module categories.
+	 */
+	private function registerAdditionalCategoires()
+	{
+		// Register them here in the future.
 	}
 
 	/**
@@ -149,50 +184,18 @@ class ModulesRegistrar {
 	}
 
 	/**
-	 * Registeres all of the different local Module categories from the config file.
-	 */
-	private function registerLocalCategories()
-	{
-		$category_array = $this->config->getModuleCategories();
-		foreach($category_array as $category_class_name) {
-			$this->validateAndRegisterCategory($category_class_name);
-		}
-	}
-
-	/**
-	 * Registers all of the the local modules based off of the modules config file.
-	 */
-	private function registerLocalModules()
-	{
-		$modules_array = $this->config->getModules();
-		foreach($modules_array as $module_class_name) {
-			$this->validateAndRegisterModule($module_class_name);
-		}
-	}
-
-	/**
-	 * Registers all of the child theme module categories from the given action.
-	 */
-	private function registerExternalCategories()
-	{
-		// Bring in child theme categories.
-	}
-
-	/**
-	 * Registers all of the child theme modules based from the given action.
-	 */
-	private function registerExternalModules()
-	{
-		// Bring in child theme modules.
-	}
-
-	/**
 	 * Validates a single category and registers it.
 	 */
-	private function validateAndRegisterCategory($class_name)
+	private function validateAndRegisterCategory($class_name, $custom_location = null)
 	{
 		// Create the category class.
 		$category_path = get_template_directory() . '/' . $this->categories_path . '/' . $class_name . '.php';
+		
+		// Was a custom location passed in?
+		if ($custom_location) {
+			$category_path = $custom_location . '/' . $class_name . '.php';
+		}
+
 		include_once($category_path);
 
 		// Make sure that if they provided a directory, only the class name is given.e
@@ -211,10 +214,16 @@ class ModulesRegistrar {
 	/**
 	 * Validates a single module and registers it.
 	 */
-	private function validateAndRegisterModule($class_name)
+	private function validateAndRegisterModule($class_name, $custom_location = null)
 	{
 		// Create the module class.
 		$module_path = get_template_directory() . '/' . $this->modules_path . '/' . $class_name . '.php';
+		
+		// Was a custom location passed in?
+		if ($custom_location) {
+			$module_path = $custom_location . '/' . $class_name . '.php';
+		}
+
 		include_once($module_path);
 
 		// Make sure that if they provided a directory only the class name is taken.

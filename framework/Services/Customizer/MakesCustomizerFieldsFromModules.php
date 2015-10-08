@@ -1,5 +1,7 @@
 <?php
-namespace Baseline\Helper;
+namespace Baseline\Services\Customizer;
+
+use Baseline\Core\Config;
 
 /*
 |--------------------------------------------------------------------------
@@ -12,7 +14,7 @@ namespace Baseline\Helper;
 |
 */
 
-trait PrepsModulesForCustomizer {
+class MakesCustomizerFieldsFromModules {
 
 	/**
 	 * Array of allowed customizer keys for Modules
@@ -22,27 +24,23 @@ trait PrepsModulesForCustomizer {
 		'theme_supports',
 		'default',
 		'transport',
-		'sanatize_callback',
 		'sanatize_js_callback',
 		'priorty',
-		'section',
 		'title',
 		'description',
-		'active_callback'
+		'active_callback',
 	);
 
-	public function getModulesForCustomizer() {
-		// Get all categorized modules.
-		$items = $this->modules->getRegisteredItems();
+	/**
+	 * Array of categories that need to have a local page version made.
+	 */
+	protected $local_category_versions = array();
 
-		// Return them parsed for customizer.
-		return $this->makeModulesForCustomizer($items);
-	}
 
 	/**
 	 * Main function for parsing through
 	 */
-	private function makeModulesForCustomizer($categories)
+	public function make($categories)
 	{
 		// Empty array to put formated categories in.
 		$for_customizer = array();
@@ -52,7 +50,6 @@ trait PrepsModulesForCustomizer {
 			$for_customizer[$category] = $this->parseThroughCategory($options);
 		}
 
-		// Return the formatted categories.
 		return $for_customizer;
 	}
 
@@ -63,7 +60,7 @@ trait PrepsModulesForCustomizer {
 	{
 		// Will fill this with parsed objects.
 		$parsed = array();
-		
+
 		// Set object to setting.
 		$parsed['object'] = 'setting';
 		
@@ -73,12 +70,20 @@ trait PrepsModulesForCustomizer {
 		// Switch title to label.
 		$parsed['label'] = $options['name'];
 
+		// Module Options automatically get sanitized for text only.
+		$parsed['sanitize_callback'] = 'esc_html';
+
+		// Add the prefix to the section
+		$prefix = Config::getInstance()->getFrameworkConfig('setting_prefix');
+		$parsed['section'] = $prefix . $options['section'];
+
 		// Add all allowed values.
 		foreach($options as $option => $value) {
 			if (in_array($option, $this->allowed_category_customizer_keys)) {
 				$parsed[$option] = $value;
 			}
 		}
+
 
 		// Parse the content modules
 		$parsed['choices'] = $this->parseModulesForCustomizer($options['modules']);
@@ -104,4 +109,5 @@ trait PrepsModulesForCustomizer {
 		// Return the parsed modules.
 		return $parsed;
 	}
+
 }

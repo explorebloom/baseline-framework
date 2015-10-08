@@ -28,22 +28,22 @@ class BaselineFramework {
 	/**
 	 * Instance of the config class that handles fetching information from the config files.
 	 */
-	protected $config;
+	protected $config = false;
 
 	/**
 	 * Instance of the registrar class that handles registering new settings.
 	 */
-	protected $registrar;
+	protected $registrar = false;
 
 	/**
 	 * Instance of the content class that handles working with content modules.
 	 */
-	protected $content;
+	protected $content = false;
 
 	/**
 	 * Instance of the settings class that handles all theme settings
 	 */
-	protected $settings;
+	protected $settings = false;
 
 
 	/**
@@ -51,35 +51,66 @@ class BaselineFramework {
 	 */
 	private function __construct($config_path)
 	{
-		// Initializes the Config and sets up a connection to the config files.
+		// Initialize the Config right away and confirm the config path.
 		$this->config = Config::getInstance($config_path);
 
-		// Initializes the main class responsible for registering all options of the Framework.
-		$this->registrar = Registrar::getInstance();
+		// Initialize the Settings Class right away.
+		$this->settings = Settings::getInstance();
 
-		// Initializes the main class responsible for displaying content.
-		// $this->content = Content::getInstance();
+		// Register everything after functions.php has executed.
+		add_action('after_setup_theme', array($this, 'initializeFrameworkRegistration'));
 
-		// Initializes and main class used for getting and working with settings.
-		// $this->settings = Settings::getInstance();
-		
+		// Register the Content Class after everything is Registered.
+		add_action('after_setup_theme', array($this, 'initializeContentClass'));
 	}
 
+	/**
+	 * Initialize the core Registrar class that will register everything.
+	 */
+	public function initializeFrameworkRegistration()
+	{
+		// Initializes the main class responsible for registering all options of the Framework.
+		$this->registrar = Registrar::getInstance();
+		$this->registrar->init();
+		$this->settings->addRegisteredSettings();
+	}
+
+	/**
+	 * Make the Core
+	 */
+	public function initializeContentClass()
+	{
+		// Initializes the main class responsible for displaying content.
+		$this->content = Content::getInstance();
+	}
+
+	/**
+	 * Returns an instance of the Core Config class.
+	 */
 	public function config()
 	{
 		return $this->config;
 	}
 
+	/**
+	 * Returns an instance of the Core Registrar class.
+	 */
 	public function registrar()
 	{
 		return $this->registrar;
 	}
 
+	/**
+	 * Returns and instance of the Core Content class.
+	 */
 	public function content()
 	{
 		return $this->content;
 	}
 
+	/**
+	 * Returns an instance of the Core Settings class.
+	 */
 	public function settings()
 	{
 		return $this->settings;

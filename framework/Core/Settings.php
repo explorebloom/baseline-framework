@@ -1,89 +1,167 @@
 <?php
-namespace Baseline;
+namespace Baseline\Core;
 
 use Baseline\Core\Config;
+use Baseline\Core\Registrar;
 use Baseline\Helper\IsSingleton;
-use Baseline\Services\WestcoCustomizer;
+
+/*
+|--------------------------------------------------------------------------
+| Baseline Core Settings Class
+|--------------------------------------------------------------------------
+|
+| This is the Core Settings class for the baseline framework. It serves the
+| purpose of getting and setting values stored in the database, managing
+| prefixing, and using theme_mods or options for registered settings.
+|
+*/
 
 class Settings {
 
 	use IsSingleton;
 
-	protected $config;
+	/**
+	 * Holds the prefix that is defined in the framework config file that all settings have.
+	 */
+	protected $setting_prefix;
 
-	protected $options_prefix;
+	/**
+	 * An associative array of the storage types for theme settings and module settings.
+	 */
+	protected $storage_type;
 
-	protected $customizer;
+	/**
+	 * Holds an array of all of the registered module category slugs
+	 */
+	protected $registered_categories = array();
 
-	protected $options;
+	/**
+	 * Holds an array of all of the registered theme settings
+	 */
+	protected $registered_settings = array();
+
+
 
 	private function __construct()
 	{
-		$this->config = WestcoConfig::getInstance();
-		$this->options_prefix = $this->config->getFrameworkConfig('options_prefix');
-		$this->customizer = WestcoCustomizer::getInstance();
+		// Instance of the Core Config class.
+		$config = Config::getInstance();
+
+		// Setting prefix from the config file.
+		$this->setting_prefix = $config->getFrameworkConfig('setting_prefix');
+
+		// Storage type from config file.
+		$this->storage_type = array(
+			'theme_settings' => $config->getFrameworkConfig('save_theme_settings_as'),
+			'module_settings' => $config->getFrameworkConfig('save_module_settings_as'),
+		);
+
+		$this->registered_settings = array();
+
 	}
 
-	public function getOption($name)
+	/**
+	 * Called by the framework after everything is registered.
+	 */
+	public function addRegisteredSettings()
 	{
-		$option_name = $this->options_prefix . $name;
+		// Registered Categories
+		$registrar = Registrar::getInstance();
+		$this->registered_categories = array_keys($registrar->getRegisteredModules());
 
-		// Is it cached?
-		if (!wp_cache_get($option_name, '', false, true) === false) {
-			return wp_cache_get($option_name);
+		// Retistered Settings
+		// $this->registered_settings = array_keys($registrar->getRegisteredSettings());
+	}
+
+	/**
+	 * Main function for getting values from the database.
+	 */
+	public function get($key, $return_value = 'not_set', $prefix = '')
+	{
+		$storage_type = $this->getStorageType($key);
+
+		$key = $prefix . $key;
+		// Is it saved as an option?
+		if ($storage_type == 'option') {
+
+			return $this->getOption($key, $return_value);
+
+		// Is it saved as a them mod?
+		} elseif ($storage_type == 'theme_mod') {
+			
+			return $this->getThemeMod($key, $return_value);
+
+		// Is it not registered?
+		} else {
+
+			return $this->getSetting($key, $return_value);
+		
 		}
-		// Is it in the databse?
-		$option = get_option($option_name, 'not_found');
-		if (!$option === 'not_found') {
-			// fix the cache
-			wp_cache_set($option_name, $option);
-			return $option;
+	}
+
+	/**
+	 * Main function setting values to the database.
+	 */
+	public function set($name, $key)
+	{
+
+	}
+
+	/**
+	 * Gets an option to the database with the framework's prefix.
+	 */
+	public function getOption($key, $default = null)
+	{
+		$key = $this->setting_prefix . $key;
+		return get_option($key, $default);
+	}
+
+	/**
+	 * Gets a theme_mod from the database with the framework's prefix.
+	 */
+	public function getThemeMod($key, $default = null)
+	{
+		$key = $this->setting_prefix . $key;
+		return get_theme_mod($key, $default);
+	}
+
+	/**
+	 * Gets a setting regardless if it is an option or a theme mod.
+	 */
+	public function getSetting($key, $default)
+	{
+		// Is it an option?
+		$option_value = $this->getOption($key, 'not_found');
+		if ($option_value !== 'not_found') {
+			return $option_value;
 		}
 
-		// Here is the default.
-		$default = $this->config->getDefaults($name);
-		$this->setOption($name, $default);
+		// Is it a theme_mod?
+		$mod_value = $this->getThemeMod($key, 'not_found');
+		if ($mod_value !== 'not_found') {
+			return $mod_value;
+		}
+
+		// Not set.
 		return $default;
+
 	}
-
-	public function setOption($name, $value)
+	/**
+	 * Figures out if the key relates to a registered setting and sets the correct storage type.
+	 */
+	private function getStorageType($key)
 	{
-		// Overwrite the the database.
-		$option_name = $this->options_prefix . $name;
-		$check = update_option($option_name, $value);
+		// Is this a registered Module Category?
+		if (in_array($key, $this->registered_categories)) {
+			return $this->storage_type['module_settings'];
 
-		// Put it in the cache.
-		if ($check) {
-			wp_cache_set($option_name, $value);
-		}
-		return $check;
-	}
-
-	public function setModuleFor($category, $module, $id = null)
-	{
-		// Is it for a specific page?
-		if ($id) {
-			set_theme_mod($category . '_' . $id, $module);
-		}
-		// Set the theme_mod
-		set_theme_mod($category, $module);
-	}
-
-	public function getModuleFor($category)
-	{
-		// Is a module set for the category for the specific page?
-
-		// Is a module set for the category globaly?
-
-		// Here is the default.
-
-
-
-		// Temporarily just hard code return values.
-		if ($category == 'navigation_template') {
-			return 'default_nav';
-		} else if ($category == 'heading_template') {
-			return 'default_header';
+		// Is this a registered Theme Setting?
+		} elseif (in_array($key, $this->registered_settings)) {
+			return $this->storage_type['theme_settings'];
+		
+		// Not registered.
+		} else {
+			return false;
 		}
 	}
 

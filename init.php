@@ -21,5 +21,7 @@ use Baseline\BaselineFramework;
  * @param string $config_path
  */
 function baseline_init($config_path) {
-	return BaselineFramework::getInstance($config_path);
+	global $_baseline;
+	$_baseline = BaselineFramework::getInstance($config_path);
+	return $_baseline;
 }
