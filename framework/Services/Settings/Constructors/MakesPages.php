@@ -32,12 +32,6 @@ class MakesPages {
 	{
 		// Set the prefix.
 		$this->setting_prefix = Config::getInstance()->getFrameworkConfig('setting_prefix');
-
-		// Set the constructor classes.
-		$this->subpage = MakesSubpages::getInstance();
-		$this->tab = MakesTabs::getInstance();
-		$this->subtab = MakesSubtabs::getInstance();
-		$this->section = MakesSections::getInstance();
 	}
 
 	/**

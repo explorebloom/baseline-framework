@@ -46,13 +46,20 @@ class MakesSubtabs {
 		// Bring out the variables
 		extract($options);
 
+		// Figure out the parent type.
+		if ($parent instanceof Baseline\Services\Settings\Callbacks\TabCallbacks) {
+			$page = $parent->options['page'];
+		} else {
+			$page = $parent->options['id'];
+		}
+
 		// Set up the Subtab Callback Class
 		$subtab_callback = new SubtabCallbacks;
 		$subtab_callback->setProperties(array(
 			'id'		=> $id,
 			'display'	=> $display,
 			'tab'		=> $parent->options['id'],
-			'page'		=> $parent->options['page']
+			'page'		=> $page
 		));
 
 		// Register the Subtab with its parent.

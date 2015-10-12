@@ -15,6 +15,11 @@ class TabCallbacks {
 	public $options;
 
 	/**
+	 * Holds the value of this Setting Objects type.
+	 */
+	public $type = 'tab';
+
+	/**
 	 * Holds the type of direct children this page has.
 	 */
 	public $child_type;

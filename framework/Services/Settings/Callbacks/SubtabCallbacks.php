@@ -13,6 +13,11 @@ class SubtabCallbacks {
 	public $options;
 
 	/**
+	 * Holds the value of this Setting Objects type.
+	 */
+	public $type = 'subtab';
+
+	/**
 	 * Holds the type of direct children this page has.
 	 */
 	public $child_type;

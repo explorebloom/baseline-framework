@@ -11,6 +11,11 @@ class SettingCallbacks {
 	public $options;
 
 	/**
+	 * Holds the value of this Setting Objects type.
+	 */
+	public $type = 'setting';
+
+	/**
 	 * An instance of the Setting Fields class.
 	 */
 	protected $fields;

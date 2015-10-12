@@ -15,6 +15,11 @@ class SubpageCallbacks {
 	public $options;
 
 	/**
+	 * Holds the value of this Setting Objects type.
+	 */
+	public $type = 'subpage';
+
+	/**
 	 * Holds the type of direct children this page has.
 	 */
 	public $child_type;
@@ -39,7 +44,10 @@ class SubpageCallbacks {
 	 */
 	public function callback()
 	{
-		echo '<h2>' . $this->options['page_title'] . '</h2>';
+		echo '<h1>' . $this->options['page_title'] . '</h1>';
+		// echo '<pre>';
+		// 	var_dump($this->options);
+		// echo '</pre>';
 
 		if ($this->child_type == 'tab') {
 

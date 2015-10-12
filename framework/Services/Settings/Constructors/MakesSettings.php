@@ -13,7 +13,7 @@ class MakesSettings {
 	 * Holds the setting prefix defined in the framework config.
 	 */
 	protected $setting_prefix;
-	
+
 	/**
 	 * Constructs the class and sets all of the properties.
 	 */

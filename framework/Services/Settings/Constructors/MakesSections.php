@@ -18,13 +18,6 @@ class MakesSections {
 	protected $setting_prefix;
 
 	/**
-	 * An array of all of the allowed child types.
-	 */
-	protected $allowed_child_types = array(
-		'setting',
-	);
-
-	/**
 	 * Constructs the class and sets all of the properties.
 	 */
 	private function __construct()
@@ -44,6 +37,11 @@ class MakesSections {
 		// Tack on the prefix.
 		$id = $this->setting_prefix . $id;
 
+		// If parent is not set then we add the sections to the general screen.
+		$parent_id = is_null($parent) ? 'general' : $parent->options['id'];
+
+		// die($parent_id);
+
 		// Bring out the options.
 		extract($options);
 
@@ -53,21 +51,23 @@ class MakesSections {
 			'id'			=> $id,
 			'title'			=> $title,
 			'description' 	=> $description,
-			'group'			=> $parent->options['id']
+			'group'			=> $parent_id
 		));
 
-		$parent->registerChild('section', $id, $options);
+		if ($parent) {
+			$parent->registerChild('section', $id, $options);
+		}
 
 		// Create the Section with the Wordpress Settings Api.
-		add_action('admin_init', function() use ($id, $options, $section_callback, $parent) {
-			$this->registerWithSettingsApi($id, $options, $section_callback, $parent);
+		add_action('admin_init', function() use ($id, $options, $section_callback, $parent_id) {
+			$this->registerWithSettingsApi($id, $options, $section_callback, $parent_id);
 		});
 	}
 
 	/**
 	 * Adds the setting section to the wordpress Api.
 	 */
-	public function registerWithSettingsApi($id, $options, $callback_class, $parent) {
+	public function registerWithSettingsApi($id, $options, $callback_class, $parent_id) {
 		// Draw out the options.
 		extract($options);
 
@@ -76,7 +76,7 @@ class MakesSections {
 			$id,
 			$title,
 			array($callback_class, 'callback'),
-			$parent->options['id']
+			$parent_id
 		);
 
 		// Make section's children
@@ -84,7 +84,7 @@ class MakesSections {
 
 		// Register everything.
 		register_setting(
-			$parent->options['id'],
+			$parent_id,
 			$id
 		);
 	}

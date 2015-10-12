@@ -84,11 +84,10 @@ class ValidatesSettingOptions {
 		}
 
 		// Loop over all of the valid options and make sure the required ones are there.
-		foreach($validated as $option => $is_required) {
+		foreach($valid as $option => $is_required) {
 			
 			// Is it required but not there?
 			if ($is_required && !array_key_exists($option, $object)) {
-				echo 'Missing Required Key!<br/>';
 				return false;
 			}
 

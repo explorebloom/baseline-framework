@@ -85,10 +85,10 @@ class MakesSettingObjects {
 				$this->page->make($id, $options);
 			} else if ($options['type'] === 'subpage') {
 				// Make a subpage
-				$this->subpage->make($id, $options, null);
-			} else if ($options['type'] === 'setting') {
+				$this->subpage->make($id, $options, null, false);
+			} else if ($options['type'] === 'section') {
 				// Make a section
-				$this->section->make($id, $options);
+				$this->section->make($id, $options, null);
 			}
 
 		}

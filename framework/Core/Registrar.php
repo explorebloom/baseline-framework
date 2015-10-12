@@ -25,14 +25,19 @@ class Registrar {
 	use IsSingleton, RegistrarHelperFunctions;
 
 	/**
+	 * Holds an instance of the module registrar.
+	 */
+	protected $modules;
+
+	/**
 	 * Holds and instance of the customizer registrar.
 	 */
 	protected $customizer;
 
 	/**
-	 * Holds an instance of the module registrar.
-	 */
-	protected $modules;
+	 * Holds an instance of the settings registrar.
+	 */	
+	protected $settings;
 
 	/**
 	 * Registers everythig from config and sets up actions for child theme extension;

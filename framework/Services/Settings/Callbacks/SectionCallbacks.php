@@ -8,6 +8,10 @@ class SectionCallbacks {
 	 */
 	public $options;
 
+	/**
+	 * Holds the value of this Setting Objects type.
+	 */
+	public $type = 'section';
 
 	/**
 	 * This is the function shows the tab's content.

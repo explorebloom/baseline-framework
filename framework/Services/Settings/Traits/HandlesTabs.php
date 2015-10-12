@@ -51,4 +51,8 @@ trait HandlesTabs {
 		echo'</h2>';
 	}
 
+	/**
+	 * Make Subpage Tab Bar.
+	 */
+
 }

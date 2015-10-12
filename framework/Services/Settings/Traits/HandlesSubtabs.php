@@ -27,23 +27,50 @@ trait HandlesSubtabs {
 	 * Creates the html for the Setting Object's subtabs.
 	 */
 	private function makeSubtabBar($current_subtab)
-		{
-			// Open the Subtab bar
-			echo '<ul class="subsubsub" style="margin-top: -5px;">';
-			
-			// Construct each link.
-			end($this->subtabs);
-			$last_subtab = key($this->subtabs);
-			reset($this->subtabs);
-			foreach ($this->subtabs as $id => $callback) {
-				$active = $current_subtab == $id ? ' class="current"' : '';
-				$link = '?page=' . $this->options['page'] . '&tab=' . $this->options['id'] . '&subtab=' . $id;
-				$display = $callback->options['display'];
-				$seperator = $id == $last_subtab ? '' : ' |';
-				echo '<li><a href="' . $link . '"' . $active . '>' . $display . '</a>' . $seperator . '</li>';
-			}
-
-			// Close the Subtab bar.
-			echo '</ul><div style="clear: both;"></div>';
+	{
+		// Set up the page and subtab value.
+		if ($this->type == 'tab') {
+			$page = '?page=' . $this->options['page'];
+			$tab = '&tab=' . $this->options['id'];
+		} else {
+			$page = '?page=' . $this->options['id'];
+			$tab = '';
 		}
+
+		// Get the last subtab
+		end($this->subtabs);
+		$last_subtab = key($this->subtabs);
+		reset($this->subtabs);
+		
+		// Open the Subtab bar
+		echo '<ul class="subsubsub" style="margin-top: -5px;"><li>';
+		
+		foreach ($this->subtabs as $id => $callback) {
+			
+			$subtab = '&subtab=' . $id;
+			
+			// Create the link
+			$href=' href="' . $page . $tab . $subtab . '"';
+			
+			// Is this the active link?
+			$active_class = $current_subtab == $id ? ' class="current"' : '';
+
+			
+			// Open the link.
+			echo '<a' . $active_class . $href . '>';
+
+			// Set the display;
+			echo $callback->options['display'];
+			
+			// Close the link.
+			echo '</a>';
+
+			// Seperator unless it is the last link.
+			echo $id == $last_subtab ? '' : ' |';
+
+		}
+
+		// Close the Subtab bar.
+		echo '</li></ul><div style="clear: both;"></div>';
+	}
 }

@@ -62,7 +62,7 @@ class MakesSubpages {
 		$capability = $capability ? $capability : 'independent';
 
 		// If there is no parent set then put the settings in wordpress's default settings page.
-		$parent_id = !is_null($parent) ? $parent->options['id'] : 'options-general.php';
+		$parent_id = is_null($parent) ? 'options-general.php' : $parent->options['id'];
 
 		// Set up the subpage callback class.
 		$subpage_callback = new SubpageCallbacks;
@@ -70,12 +70,19 @@ class MakesSubpages {
 			'id'			=> $id,
 			'page_title'	=> $page_title,
 			'menu_title'	=> $menu_title,
+			'parent'		=> $parent->subpages,
+			'tabs'			=> $parent->options['tabs'],
 			'subtabs'		=> $subtabs,
 		));
 
+		// Register the Tab with it's parent.
+		if (!is_null($parent)) {
+			$parent->registerChild('tab', $id, $menu_title);
+		}
+
 		// At the sub page through the wordpress Settings API.
 		add_submenu_page(
-			$parent->options['id'],
+			$parent_id,
 			$page_title,
 			$menu_title,
 			$capability,

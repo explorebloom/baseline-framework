@@ -15,9 +15,21 @@ class PageCallbacks {
 	public $options;
 
 	/**
+	 * Holds the value of this Setting Objects type.
+	 */
+	public $type = 'page';
+
+	/**
 	 * Holds the type of direct children this page has.
 	 */
 	public $child_type;
+
+	/**
+	 * An array of all of the subpages that are children to this page. It is public so that
+	 * the direct subpages can see all their siblings for creating tab bar's based off of
+	 * subpages.
+	 */
+	public $subpages = array();
 
 	/**
 	 * An array of all of the tabs that are children to this page.
@@ -39,21 +51,25 @@ class PageCallbacks {
 	 */
 	public function callback()
 	{
-		if ($child_type == 'subpage') {
+		if ($this->child_type != 'subpage') {
+			echo '<h1>' . $this->options['page_title'] . '</h1>';
+		}
+
+		if ($this->child_type == 'subpage') {
 
 			// Subpage callbacks get called automatically by wordpress.
 			return;
 
-		} else if ($child_type == 'tab') {
+		} else if ($this->child_type == 'tab' && $this->options['tabs'] == 'independent') {
 
 			$this->tabs();
 
-		} else if ($child_type == 'subtab') {
+		} else if ($this->child_type == 'subtab') {
 
 			// Do the subtabs.
 			$this->subtabs();
 
-		} else if ($child_type == 'section') {
+		} else if ($this->child_type == 'section') {
 
 			// Do the sections
 			$this->sections();
@@ -73,25 +89,30 @@ class PageCallbacks {
 	 * Registers the child element and it's callback to the correct
 	 * property of the page callback class.
 	 */
-	public function registerChild($type, $id, $callback_class) {
+	public function registerChild($type, $key, $value) {
 		
+		if ($type == 'subpage') {
+
+			// Add it to the subpages array.
+			$this->subpages[$key] = $value;
+
 		// Is it a tab?
-		if ($type == 'tab') {
+		} else if ($type == 'tab') {
 
 			// Add it to the tabs array.
-			$this->tabs[$id] = $callback_class;
+			$this->tabs[$key] = $value;
 
 		// Is it a subtab?
 		} else if ($type == 'subtab') {
 
 			// Add it to the subtabs array
-			$this->subtabs[$id] = $callback_class;
+			$this->subtabs[$key] = $value;
 
 		// Is it a section?
 		} else if ($type == 'section') {
 
 			// Add it to the sections array
-			$this->sections[$id] = $callback_class;
+			$this->sections[$key] = $value;
 		
 		}
 	}
