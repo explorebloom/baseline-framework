@@ -46,8 +46,11 @@ class Registrar {
 		// Register all the different content modules in the config file.
 		$this->modules->register();
 
-		// Register all the different settings from the config file.
+		// Register all the different customizer settings from the config file.
 		$this->customizer->register();
+
+		// Registers all of the different settings from the config file.
+		$this->settings->register();
 	}
 
 }

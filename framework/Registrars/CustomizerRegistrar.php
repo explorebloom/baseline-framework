@@ -81,7 +81,7 @@ class CustomizerRegistrar {
 
 		// Storage type for different settings.
 		$this->storage_type = array(
-			'theme_settings' => $config->getFrameworkConfig('save_theme_settings_as'),
+			'customizer_settings' => $config->getFrameworkConfig('save_customizer_settings_as'),
 			'module_settings' => $config->getFrameworkConfig('save_module_settings_as'),
 		);
 	}
@@ -108,7 +108,7 @@ class CustomizerRegistrar {
 		// Register all theme settings from the customizer config file.
 		$this->customizer->register(
 			$this->customizer_config,
-			$this->storage_type['theme_settings'],
+			$this->storage_type['customizer_settings'],
 			null,
 			$this->setting_prefix,
 			$wp_customize

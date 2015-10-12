@@ -26,22 +26,9 @@ class Config {
 	 * Public function to get the defaults for the theme options.
 	 * An optional key may be passed to return only one section.
 	 *
-	 * @param string $key
 	 * @return array
 	 */
-	public function getThemeDefaults($key = null)
-	{
-		$data = $this->getConfigData('defaults');
-		return $key ? $data[$key] : $data;
-	}
-
-	/**
-	 * Public function to get the defaults for the theme options.
-	 * An optional key may be passed to return only one section.
-	 *
-	 * @return array
-	 */
-	public function getModules()
+	public function getModulesConfig()
 	{
 		return $this->getConfigData('modules');
 	}
@@ -52,7 +39,7 @@ class Config {
 	 *
 	 * @return array
 	 */
-	public function getModuleCategories()
+	public function getCategoriesConfig()
 	{
 		return $this->getConfigData('categories');
 	}
@@ -68,7 +55,6 @@ class Config {
 	{
 		$data = $this->getConfigData('framework');
 		return $key ? $data[$key] : $data;
-		
 	}
 
 	/**
@@ -79,6 +65,14 @@ class Config {
 	public function getCustomizerConfig()
 	{
 		return $this->getConfigData('customizer');
+	}
+
+	/**
+	 * Returns all of the config data from the settings config file.
+	 */
+	public function getSettingsConfig()
+	{
+		return $this->getConfigData('settings');
 	}
 
 	/**
@@ -104,7 +98,7 @@ class Config {
 			'customizer.php',
 			'framework.php',
 			'modules.php',
-			'options.php',
+			'settings.php',
 		);
 
 		// Check for the files
