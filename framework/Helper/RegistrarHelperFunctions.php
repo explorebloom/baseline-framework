@@ -46,4 +46,17 @@ trait RegistrarHelperFunctions {
 		return $modulesToCustomizer->make($modules);
 	}
 
+	public function getRegisteredCustomizerSettings()
+	{
+		
+	}
+
+	/**
+	 * Gets all of the registered settings that have been constructed with the settings api.
+	 */
+	public function getRegisteredSettings()
+	{
+		return $this->settings->getRegisteredSettings();
+	}
+
 }

@@ -53,7 +53,8 @@ class MakesTabs {
 		$tab_callback->setProperties(array(
 			'id' 		=> $id,
 			'display' 	=> $display,
-			'page'		=> $parent->options['id']
+			'page'		=> $parent->options['id'],
+			'subtab_style' => $parent->options['subtab_style']
 		));
 
 		// Register the Tab with it's parent.

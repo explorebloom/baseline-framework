@@ -46,7 +46,8 @@ class MakesPages {
 		extract($options);
 
 		// Set defaults if needed.
-		$tabs = $tabs ? $tabs : 'independent';
+		$tab_style = $tab_style ? $tab_style : 'independent';
+		$subtab_style = $subtab_style ? $subtab_style : 'independent';
 		$capability = $capability ? $capability : 'manage_options';
 		$icon_url = $icon_url ? $icon_url : '';
 		$position = $position ? $position : null;
@@ -54,10 +55,11 @@ class MakesPages {
 		// Set up the page's callback class.
 		$page_callback = new PageCallbacks;
 		$page_callback->setProperties(array(
-			'id' 			=> $id,
-			'page_title' 	=> $page_title,
-			'menu_title' 	=> $menu_title,
-			'tabs'			=> $tabs,
+			'id' 				=> $id,
+			'page_title' 		=> $page_title,
+			'menu_title' 		=> $menu_title,
+			'tab_style'			=> $tab_style,
+			'subtab_style'		=> $subtab_style,
 		));
 
 		// Register with wordpress

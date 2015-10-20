@@ -57,9 +57,11 @@ class MakesSubpages {
 		// Bring out the variables.
 		extract($options);
 
-		// Set the defaults if needed.
-		$subtabs = $subtabs ? $subtabs : 'independent';
-		$capability = $capability ? $capability : 'independent';
+		// Is subtab style set?
+		if (!$subtab_style) {
+			$subtab_style = !is_null($parent) ? $parent->options['subtab_style'] : 'independent';
+		} 
+		$capability = $capability ? $capability : 'manage_options';
 
 		// If there is no parent set then put the settings in wordpress's default settings page.
 		$parent_id = is_null($parent) ? 'options-general.php' : $parent->options['id'];
@@ -70,16 +72,17 @@ class MakesSubpages {
 			'id'			=> $id,
 			'page_title'	=> $page_title,
 			'menu_title'	=> $menu_title,
-			'parent'		=> $parent->subpages,
-			'tabs'			=> $parent->options['tabs'],
-			'subtabs'		=> $subtabs,
+			'parent'		=> $parent,
+			'tab_style'		=> $parent->options['tab_style'],
+			'subtab_style'	=> $subtab_style,
 		));
 
 		// Register the Tab with it's parent.
 		if (!is_null($parent)) {
-			$parent->registerChild('tab', $id, $menu_title);
+			$parent->registerChild('subpage', $id, $menu_title);
 		}
 
+		// A
 		// At the sub page through the wordpress Settings API.
 		add_submenu_page(
 			$parent_id,
@@ -92,6 +95,23 @@ class MakesSubpages {
 
 		// Makes its contents.
 		$this->makeChildren($contents, $subpage_callback);
+	}
+
+	/**
+	 * Registers the page with the Wordpress Settings Api.
+	 */
+	public function registerWithApi($parent_id, $page_title, $menu_title, $capability, $id, $subpage_callback)
+	{
+		// Register with wordpress
+		add_submenu_page(
+			$page_title,
+			$menu_title,
+			$capability,
+			$id,
+			array($page_callback, 'callback'),
+			$icon_url,
+			$position
+		);
 	}
 
 }

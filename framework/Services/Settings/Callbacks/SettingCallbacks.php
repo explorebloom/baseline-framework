@@ -16,26 +16,12 @@ class SettingCallbacks {
 	public $type = 'setting';
 
 	/**
-	 * An instance of the Setting Fields class.
-	 */
-	protected $fields;
-
-	/**
-	 * Builds up the Class and sets up the settings.
-	 */
-	public function __construct()
-	{
-		$this->fields = MakesSettingFields::getInstance();
-	}
-	/**
 	 * This is the function shows the tab's content.
 	 */
 	public function callback()
 	{
-		$type = $this->options['setting_type'];
-		if ($type = 'text') {
-			$this->fields->text($this->options);
-		}
+		$setting_field = new MakesSettingFields;
+		$setting_field->makeFromOptions($this->options);
 	}
 
 	/**

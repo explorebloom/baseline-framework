@@ -36,7 +36,12 @@ class Settings {
 	protected $registered_categories = array();
 
 	/**
-	 * Holds an array of all of the registered theme settings
+	 * Holds an array of all of the registered customizer settings
+	 */
+	protected $registered_customizer = array();
+
+	/**
+	 * Holds an array of all of the registered theme settings.
 	 */
 	protected $registered_settings = array();
 
@@ -52,11 +57,9 @@ class Settings {
 
 		// Storage type from config file.
 		$this->storage_type = array(
-			'theme_settings' => $config->getFrameworkConfig('save_theme_settings_as'),
+			'customizer_settings' => $config->getFrameworkConfig('save_customizer_settings_as'),
 			'module_settings' => $config->getFrameworkConfig('save_module_settings_as'),
 		);
-
-		$this->registered_settings = array();
 
 	}
 
@@ -70,7 +73,7 @@ class Settings {
 		$this->registered_categories = array_keys($registrar->getRegisteredModules());
 
 		// Retistered Settings
-		// $this->registered_settings = array_keys($registrar->getRegisteredSettings());
+		$this->registered_settings = array_keys($registrar->getRegisteredSettings());
 	}
 
 	/**

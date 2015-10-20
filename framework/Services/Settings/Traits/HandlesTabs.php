@@ -18,7 +18,7 @@ trait HandlesTabs {
 		}
 
 		// Make the tab bar
-		$this->makeTabBar($current_tab);
+		$this->makeTabBar($current_tab, $this->tabs);
 
 		// Get the callback class
 		$tab_callback = $this->tabs[$current_tab];
@@ -52,7 +52,31 @@ trait HandlesTabs {
 	}
 
 	/**
-	 * Make Subpage Tab Bar.
+	 * Make Tab Bar from all of a Pages subpages.
 	 */
+	private function makeTabsFromSiblings($current_tab)
+	{
+		// Get the sibling subpages.
+		$siblings = $this->options['parent']->getSubpages();
+
+		// Open the tab bar
+		echo '<h2 class="nav-tab-wrapper">';
+
+		// Loop over them and construct the individual tabs.
+		foreach ($siblings as $id => $display) {
+
+			// Set up the variables.
+			$active = $current_tab == $id ? ' nav-tab-active' : '';
+			$link = '?page=' . $id;
+			$class = 'nav-tab' . $active;
+
+			// Echo the tab.
+			echo '<a href="' . $link . '" class="' . $class . '">' . $display . '</a>';
+		}
+
+		// close the tab bar.
+		echo '</h2>';
+
+	}
 
 }

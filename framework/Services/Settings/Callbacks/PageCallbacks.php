@@ -25,11 +25,9 @@ class PageCallbacks {
 	public $child_type;
 
 	/**
-	 * An array of all of the subpages that are children to this page. It is public so that
-	 * the direct subpages can see all their siblings for creating tab bar's based off of
-	 * subpages.
+	 * An array of all of the subpages that are children to this page. 
 	 */
-	public $subpages = array();
+	protected $subpages = array();
 
 	/**
 	 * An array of all of the tabs that are children to this page.
@@ -60,11 +58,11 @@ class PageCallbacks {
 			// Subpage callbacks get called automatically by wordpress.
 			return;
 
-		} else if ($this->child_type == 'tab' && $this->options['tabs'] == 'independent') {
+		} else if ($this->child_type == 'tab' && $this->options['tab_style'] == 'independent') {
 
 			$this->tabs();
 
-		} else if ($this->child_type == 'subtab') {
+		} else if ($this->child_type == 'subtab' && $this->options['subtab_style'] == 'independent') {
 
 			// Do the subtabs.
 			$this->subtabs();
@@ -115,5 +113,10 @@ class PageCallbacks {
 			$this->sections[$key] = $value;
 		
 		}
+	}
+
+	public function getSubpages()
+	{
+		return $this->subpages;
 	}
 }

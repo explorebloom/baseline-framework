@@ -30,14 +30,13 @@ class MakesSettings {
 
 		// Bring out the options.
 		extract($options);
-
 		// Set up the callback class.
 		$setting_callback = new SettingCallbacks;
 		$setting_callback->setProperties(array(
-			'id'			=> $id,
-			'section'		=> $parent->options['id'],
-			'setting_type'	=> $setting_type,
-			'options'		=> $options,
+			'id'				=> $id,
+			'section'			=> $parent->options['id'],
+			'setting_type'		=> $setting_type,
+			'given_options'		=> $options,
 		));
 
 		// Create the Setting with the Wordpress Settings Api.
@@ -48,6 +47,7 @@ class MakesSettings {
 			$parent->options['group'],
 			$parent->options['id']
 		);
+
 	}
 
 }

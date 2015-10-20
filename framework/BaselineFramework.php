@@ -61,7 +61,7 @@ class BaselineFramework {
 		add_action('after_setup_theme', array($this, 'initializeFrameworkRegistration'));
 
 		// Register the Content Class after everything is Registered.
-		add_action('after_setup_theme', array($this, 'initializeContentClass'));
+		// add_action('after_setup_theme', array($this, 'initializeContentClass'));
 	}
 
 	/**
@@ -72,7 +72,7 @@ class BaselineFramework {
 		// Initializes the main class responsible for registering all options of the Framework.
 		$this->registrar = Registrar::getInstance();
 		$this->registrar->init();
-		$this->settings->addRegisteredSettings();
+		// $this->settings->addRegisteredSettings();
 	}
 
 	/**

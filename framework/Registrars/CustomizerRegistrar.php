@@ -54,12 +54,6 @@ class CustomizerRegistrar {
 	protected $registered_customizer_settings;
 
 	/**
-	 * Holds all of the settings that have been successfully registered
-	 * within the options page.
-	 */
-	protected $registered_option_settings;
-
-	/**
 	 * Constructs the class and sets all properties.
 	 */
 	private function __construct()

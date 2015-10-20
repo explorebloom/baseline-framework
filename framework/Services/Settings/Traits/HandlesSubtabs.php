@@ -43,10 +43,11 @@ trait HandlesSubtabs {
 		reset($this->subtabs);
 		
 		// Open the Subtab bar
-		echo '<ul class="subsubsub" style="margin-top: -5px;"><li>';
+		echo '<ul class="subsubsub" style="margin-top: -5px;">';
 		
 		foreach ($this->subtabs as $id => $callback) {
 			
+			echo '<li>';
 			$subtab = '&subtab=' . $id;
 			
 			// Create the link
@@ -68,9 +69,10 @@ trait HandlesSubtabs {
 			// Seperator unless it is the last link.
 			echo $id == $last_subtab ? '' : ' |';
 
+			echo '</li>';
 		}
 
 		// Close the Subtab bar.
-		echo '</li></ul><div style="clear: both;"></div>';
+		echo '</ul><div style="clear: both;"></div>';
 	}
 }

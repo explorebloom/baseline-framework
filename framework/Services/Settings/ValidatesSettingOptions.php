@@ -17,7 +17,8 @@ class ValidatesSettingOptions {
 			'contents' => true,
 			'page_title' => true,
 			'menu_title' => true,
-			'tabs' => false,
+			'tab_style' => false,
+			'subtab_style' => false,
 			'capability' => false,
 			'icon_url' => false,
 			'position' => false,
@@ -28,7 +29,7 @@ class ValidatesSettingOptions {
 			'contents' => true,
 			'page_title' => true,
 			'menu_title' => true,
-			'subtabs' => false,
+			'subtab_style' => false,
 			'capability' => false,
 		),
 
@@ -53,8 +54,19 @@ class ValidatesSettingOptions {
 
 		'setting' => array(
 			'type' => true,
-			'title' => true,
 			'setting_type' => true,
+			'title' => true,
+			'size'	=> false,
+			'before' => false,
+			'after' => false,
+			'placeholder' => false,
+			'subtitle' => false,
+			'html5'	=> false,
+			'attributes' => false,
+			'class' => false,
+			'boxes'	=> false,
+			'select_options' => false,
+			'radio_options' => false,
 		)
 	);
 

@@ -37,8 +37,17 @@ class MakesSections {
 		// Tack on the prefix.
 		$id = $this->setting_prefix . $id;
 
-		// If parent is not set then we add the sections to the general screen.
-		$parent_id = is_null($parent) ? 'general' : $parent->options['id'];
+		// Is the parent set?
+		if (!is_null($parent)) {
+		
+			// If subtab style is independent, then the section will just be grouped in the parent id.
+			// If subtabs should be build off of sections, then the group will be the section id.
+			$parent_id = $parent->options['subtab_style'] == 'independent' ? $parent->options['id'] : $id;
+
+		// If there is no parent set then just put the sections in the general settings.
+		} else {
+			$parent_id = 'general';
+		}
 
 		// die($parent_id);
 

@@ -29,6 +29,12 @@ trait RegistersChildren {
 			// Get the type.
 			$type = $valid_options['type'];
 
+			// Make sure for tabs the parent's tab_style is set to independent
+			if ($type == 'tab' && $parent->options['tab_style'] != 'independent') {
+				// Ignore and move on to the next item.
+				continue;
+			}
+
 			// If it is the first valid child, make sure everything else is this type.
 			if ($initial) {
 				// Set the page's direct children to the type.
@@ -53,7 +59,7 @@ trait RegistersChildren {
 	/**
 	 * Figures out what child item is and calls it's constructor class.
 	 */
-	private function callChildConstructor($id, $options, $parent_callback, $initial)
+	private function callChildConstructor($id, $options, $parent, $initial)
 	{
 		// Get the type.
 		$type = $options['type'];
@@ -65,27 +71,26 @@ trait RegistersChildren {
 
 		// Is it a subpage?
 		if ($type === 'subpage') {
-
 			// Then make a Subpage.
-			MakesSubpages::getInstance()->make($id, $options, $parent_callback, $initial);
+			MakesSubpages::getInstance()->make($id, $options, $parent, $initial);
 
 		// Is it a tab?
 		} else if ($type === 'tab') {
-			
+
 			// Then make a Tab.
-			MakesTabs::getInstance()->make($id, $options, $parent_callback);
+			MakesTabs::getInstance()->make($id, $options, $parent);
 
 		// Is it a subtab?
 		} else if ($type === 'subtab') {
 
 			// Then make a Subtab.
-			MakesSubtabs::getInstance()->make($id, $options, $parent_callback);
+			MakesSubtabs::getInstance()->make($id, $options, $parent);
 
 		// Is it a section?
 		} else if ($type === 'section') {
 
 			// Then make a section
-			MakesSections::getInstance()->make($id, $options, $parent_callback);
+			MakesSections::getInstance()->make($id, $options, $parent);
 
 		// Is it a setting?
 		} else if ($type === 'setting') {
