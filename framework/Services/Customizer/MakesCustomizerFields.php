@@ -60,7 +60,6 @@ class MakesCustomizerFields {
 	public function register($objects, $storage_type, $parent = null, $prefix = null, $wp_customize = null)
 	{
 		// Get the helper classes.
-		// $this->sanitizer = SanitizesCustomizerFields::getInstance();
 		$this->validator = ValidatesCustomizerOptions::getInstance();
 
 		// Set wp_customize as property for first run through.
