@@ -198,16 +198,24 @@ class ModulesRegistrar {
 
 		include_once($category_path);
 
-		// Make sure that if they provided a directory, only the class name is given.e
+		// Make sure that if they provided a directory, only the class name is given.
 		$class_name = end(explode('/', $class_name));
-		$category = new $class_name;
-
-		// Is the category is an instance of the category contract?
-		if (!$category instanceof ContentModuleCategory) {
+		
+		// Does the class exist?
+		if (!class_exists($class_name)) {
 			return false;
 		}
 
-		// Register the Category
+		// Then Create the object.
+		$category = new $class_name;
+
+		// Does the class have a configuration method?
+		if (!method_exists($category, 'configuration')) {
+			return false;
+		}
+
+		// Then add the Category to the registered_categories array property.
+		// Its given slug is the key and its returned configuration array is the value.
 		$this->registered_categories[$category->configuration()['slug']] = $category->configuration();
 	}
 
@@ -228,13 +236,22 @@ class ModulesRegistrar {
 
 		// Make sure that if they provided a directory only the class name is taken.
 		$class_name = end(explode('/', $class_name));
-		$module = new $class_name;
-		
-		// Is the category is an instance of the category contract?
-		if (!$module instanceof ContentModule) {
+
+		// Does the class exist?
+		if (!class_exists($class_name)) {
 			return false;
 		}
-		// Register the Modules
+
+		// Then instantiate the object.
+		$module = new $class_name;
+		
+		// Does the module have a configuration method?
+		if (!method_exists($module, 'configuration')) {
+			return false;
+		}
+
+		// Then add the Module to the registered_modules array property.
+		// Its given slug is the key and its returned configuration array is the value.
 		$this->registered_modules[$module->configuration()['slug']] = $module->configuration();
 	}
 

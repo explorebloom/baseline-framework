@@ -133,4 +133,5 @@ class CustomizerRegistrar {
 		// Then overwrite customizer settings with modifications made by a child theme.
 
 	}
+
 }

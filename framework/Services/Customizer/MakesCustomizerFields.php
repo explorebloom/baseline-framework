@@ -3,7 +3,7 @@ namespace Baseline\Services\Customizer;
 
 use Baseline\Core\Config;
 use Baseline\Helper\IsSingleton;
-use Baseline\Services\Customizer\SanitizesCustomizerFields;
+use Baseline\Registrars\CustomizerRegistrar;
 use Baseline\Services\Customizer\ValidatesCustomizerOptions;
 /*
 |--------------------------------------------------------------------------
@@ -60,7 +60,7 @@ class MakesCustomizerFields {
 	public function register($objects, $storage_type, $parent = null, $prefix = null, $wp_customize = null)
 	{
 		// Get the helper classes.
-		$this->sanitizer = SanitizesCustomizerFields::getInstance();
+		// $this->sanitizer = SanitizesCustomizerFields::getInstance();
 		$this->validator = ValidatesCustomizerOptions::getInstance();
 
 		// Set wp_customize as property for first run through.
@@ -155,8 +155,6 @@ class MakesCustomizerFields {
 
 		// Register the Setting
 		$this->wp_customize->add_setting($id, $validated_options);
-
-		// var_dump(array('Setting: ' . $id => $validated_options));
 	}
 
 	/**
