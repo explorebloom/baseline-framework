@@ -83,16 +83,24 @@ class Settings {
 	 */
 	public function get($key, $return_value = 'not_set')
 	{
+		// Figure out how the setting is stored.
 		$storage_type = $this->getStorageType($key);
+		
 		// Is it saved as an option?
 		if ($storage_type == 'option') {
-
 			return $this->getOption($key, $return_value);
 
 		// Is it saved as a them mod?
 		} elseif ($storage_type == 'theme_mod') {
-			
 			return $this->getThemeMod($key, $return_value);
+
+		// Is it a setting section saved as an option?
+		} elseif ($storage_type == 'setting_section') {
+			$value = $this->getOption($key, $return_value);
+			if ($value != $return_value) {
+				return $this->removeSettingSectionPrefixes($value);
+			}
+			return $value;
 
 		// Is it not registered?
 		} else {
@@ -154,7 +162,7 @@ class Settings {
 
 		// Is this a registered Setting Section?
 		} elseif (in_array($key, $this->registered_settings)) {
-			return 'option';
+			return 'setting_section';
 		
 		// Is this a registered Customizer Setting?
 		} elseif (in_array($key, $this->registered_customizer)) {
@@ -164,6 +172,20 @@ class Settings {
 		} else {
 			return false;
 		}
+	}
+
+	/**
+	 * Goes through a setting section and removes all of the prefixes from the settings.
+	 */
+	private function removeSettingSectionPrefixes($setting_section)
+	{
+		// Will put updated settings here.
+		$new_settings = array();
+		foreach($setting_section as $id => $value) {
+			$id = str_replace($this->setting_prefix, '', $id);
+			$new_settings[$id] = $value;
+		}
+		return $new_settings;
 	}
 
 }
