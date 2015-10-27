@@ -71,32 +71,33 @@ trait RegistersChildren {
 
 		// Is it a subpage?
 		if ($type === 'subpage') {
+			
 			// Then make a Subpage.
-			MakesSubpages::getInstance()->make($id, $options, $parent, $initial);
+			(new MakesSubpages)->make($id, $options, $parent, $initial);
 
 		// Is it a tab?
 		} else if ($type === 'tab') {
 
 			// Then make a Tab.
-			MakesTabs::getInstance()->make($id, $options, $parent);
+			(new MakesTabs)->make($id, $options, $parent);
 
 		// Is it a subtab?
 		} else if ($type === 'subtab') {
 
 			// Then make a Subtab.
-			MakesSubtabs::getInstance()->make($id, $options, $parent);
+			(new MakesSubtabs)->make($id, $options, $parent);
 
 		// Is it a section?
 		} else if ($type === 'section') {
 
 			// Then make a section
-			MakesSections::getInstance()->make($id, $options, $parent);
+			(new MakesSections)->make($id, $options, $parent);
 
 		// Is it a setting?
 		} else if ($type === 'setting') {
 
 			// Then make a setting
-			MakesSettings::getInstance()->make($id, $options, $parent);
+			(new MakesSettings)->make($id, $options, $parent);
 
 		}
 

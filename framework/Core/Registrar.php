@@ -14,7 +14,7 @@ use Baseline\Helper\RegistrarHelperFunctions;
 |
 | This is the main class for registration settings. It is responsible for
 | calling all sub registrar classes to make sure everything is properly 
-| registered. It also makes actions for registering from a child them.
+| registered. And then holds all of the settings for user reference.
 |
 */
 

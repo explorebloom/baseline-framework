@@ -72,18 +72,18 @@ class Settings {
 		$registrar = Registrar::getInstance();
 		$this->registered_categories = array_keys($registrar->getRegisteredModules());
 
-		// Retistered Settings
+		// Registered Settings
 		$this->registered_settings = array_keys($registrar->getRegisteredSettings());
+
+		// Registered Customizer Settings
 	}
 
 	/**
 	 * Main function for getting values from the database.
 	 */
-	public function get($key, $return_value = 'not_set', $prefix = '')
+	public function get($key, $return_value = 'not_set')
 	{
 		$storage_type = $this->getStorageType($key);
-
-		$key = $prefix . $key;
 		// Is it saved as an option?
 		if ($storage_type == 'option') {
 
@@ -100,14 +100,6 @@ class Settings {
 			return $this->getSetting($key, $return_value);
 		
 		}
-	}
-
-	/**
-	 * Main function setting values to the database.
-	 */
-	public function set($name, $key)
-	{
-
 	}
 
 	/**
@@ -154,15 +146,21 @@ class Settings {
 	 */
 	private function getStorageType($key)
 	{
+		$key = $this->setting_prefix . $key;
+
 		// Is this a registered Module Category?
 		if (in_array($key, $this->registered_categories)) {
 			return $this->storage_type['module_settings'];
 
-		// Is this a registered Theme Setting?
+		// Is this a registered Setting Section?
 		} elseif (in_array($key, $this->registered_settings)) {
-			return $this->storage_type['theme_settings'];
+			return 'option';
 		
-		// Not registered.
+		// Is this a registered Customizer Setting?
+		} elseif (in_array($key, $this->registered_customizer)) {
+			return $this->storage_type['customizer_settings'];
+
+		// It is not registered
 		} else {
 			return false;
 		}

@@ -9,12 +9,27 @@ use Baseline\Services\Settings\Callbacks\SubpageCallbacks;
 
 class MakesSubpages {
 
-	use IsSingleton, RegistersChildren;
+	use RegistersChildren;
 
 	/**
 	 * Holds the setting prefix defined in the framework config.
 	 */
 	protected $setting_prefix;
+
+	/**
+	 * Holds the subpage id for reference by the wordpress action.
+	 */
+	protected $subpage_id;
+
+	/**
+	 * Holds all of teh subpage options for reference by the wordpress action.
+	 */
+	protected $subpage_options;
+
+	/**
+	 * Holds the subpage callback for reference by the wordpress action.
+	 */
+	protected $subpage_callback;
 
 	/**
 	 * An array of all of the allowed child types.
@@ -28,7 +43,7 @@ class MakesSubpages {
 	/**
 	 * Constructs the class and sets all of the properties.
 	 */
-	private function __construct()
+	public function __construct()
 	{
 		// Set the prefix.
 		$this->setting_prefix = Config::getInstance()->getFrameworkConfig('setting_prefix');
@@ -36,10 +51,6 @@ class MakesSubpages {
 		// Set the validation class.
 		$this->validator = ValidatesSettingOptions::getInstance();
 
-		// Set the constructor classes.
-		$this->tab = MakesTabs::getInstance();
-		$this->subtab = MakesSubtabs::getInstance();
-		$this->section = MakesSections::getInstance();
 	}
 
 	/**
@@ -49,9 +60,9 @@ class MakesSubpages {
 	{
 		// Tack on the prefix.
 		if ($initial) {
-			$id = $parent->options['id'];
+			$this->subpage_id = $parent->options['id'];
 		} else {
-			$id = $this->setting_prefix . $id;
+			$this->subpage_id = $this->setting_prefix . $id;
 		}
 
 		// Bring out the variables.
@@ -59,58 +70,52 @@ class MakesSubpages {
 
 		// Is subtab style set?
 		if (!$subtab_style) {
-			$subtab_style = !is_null($parent) ? $parent->options['subtab_style'] : 'independent';
+			$options['subtab_style'] = !is_null($parent) ? $parent->options['subtab_style'] : 'independent';
 		} 
-		$capability = $capability ? $capability : 'manage_options';
+		$options['capability'] = $capability ? $capability : 'manage_options';
 
 		// If there is no parent set then put the settings in wordpress's default settings page.
-		$parent_id = is_null($parent) ? 'options-general.php' : $parent->options['id'];
+		$options['parent_id'] = is_null($parent) ? 'options-general.php' : $parent->options['id'];
+
+		// Set the options to the property.
+		$this->subpage_options = $options;
 
 		// Set up the subpage callback class.
-		$subpage_callback = new SubpageCallbacks;
-		$subpage_callback->setProperties(array(
-			'id'			=> $id,
-			'page_title'	=> $page_title,
-			'menu_title'	=> $menu_title,
+		$this->subpage_callback = new SubpageCallbacks;
+		$this->subpage_callback->setProperties(array(
+			'id'			=> $this->subpage_id,
+			'page_title'	=> $this->subpage_options['page_title'],
+			'menu_title'	=> $this->subpage_options['menu_title'],
 			'parent'		=> $parent,
 			'tab_style'		=> $parent->options['tab_style'],
-			'subtab_style'	=> $subtab_style,
+			'subtab_style'	=> $this->subpage_options['subtab_style'],
 		));
 
-		// Register the Tab with it's parent.
+		// Register the subpage with it's parent if it has one.
 		if (!is_null($parent)) {
-			$parent->registerChild('subpage', $id, $menu_title);
+			$parent->registerChild('subpage', $this->subpage_id, $this->subpage_options['menu_title']);
 		}
 
-		// A
-		// At the sub page through the wordpress Settings API.
-		add_submenu_page(
-			$parent_id,
-			$page_title,
-			$menu_title,
-			$capability,
-			$id,
-			array($subpage_callback, 'callback')
-		);
+		// Register the page with wordpress.
+		add_action('admin_menu', array($this, 'registerSubpage'));
 
 		// Makes its contents.
-		$this->makeChildren($contents, $subpage_callback);
+		$this->makeChildren($contents, $this->subpage_callback);
 	}
 
 	/**
 	 * Registers the page with the Wordpress Settings Api.
 	 */
-	public function registerWithApi($parent_id, $page_title, $menu_title, $capability, $id, $subpage_callback)
+	public function registerSubpage()
 	{
-		// Register with wordpress
+		// At the sub page through the wordpress Settings API.
 		add_submenu_page(
-			$page_title,
-			$menu_title,
-			$capability,
-			$id,
-			array($page_callback, 'callback'),
-			$icon_url,
-			$position
+			$this->subpage_options['parent_id'],
+			$this->subpage_options['page_title'],
+			$this->subpage_options['menu_title'],
+			$this->subpage_options['capability'],
+			$this->subpage_id,
+			array($this->subpage_callback, 'callback')
 		);
 	}
 

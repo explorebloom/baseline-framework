@@ -8,12 +8,27 @@ use Baseline\Services\Settings\Traits\RegistersChildren;
 
 class MakesPages {
 
-	use IsSingleton, RegistersChildren;
+	use RegistersChildren;
 
 	/**
 	 * Holds our setting prefix from the framework config file.
 	 */
 	protected $setting_prefix;
+
+	/**
+	 * Holds the page's id for the action to reference.
+	 */
+	protected $page_id;
+
+	/**
+	 * Holds all of the page's settings for the action to reference.
+	 */
+	protected $page_options;
+
+	/**
+	 * Holds an instance of the page's callback class.
+	 */
+	protected $page_callback;
 
 	/**
 	 * An array of all of the allowed child types.
@@ -28,7 +43,7 @@ class MakesPages {
 	/**
 	 * Constructs the class and sets its properties.
 	 */
-	private function __construct()
+	public function __construct()
 	{
 		// Set the prefix.
 		$this->setting_prefix = Config::getInstance()->getFrameworkConfig('setting_prefix');
@@ -39,42 +54,56 @@ class MakesPages {
 	 */
 	public function make($id, $options)
 	{
-		// Tack on the prefix.
-		$id = $this->setting_prefix . $id;
+		// Tack on the prefix and set the page's id.
+		$this->page_id = $this->setting_prefix . $id;
 
 		// Bring out all of the variable.
 		extract($options);
 
 		// Set defaults if needed.
-		$tab_style = $tab_style ? $tab_style : 'independent';
-		$subtab_style = $subtab_style ? $subtab_style : 'independent';
-		$capability = $capability ? $capability : 'manage_options';
-		$icon_url = $icon_url ? $icon_url : '';
-		$position = $position ? $position : null;
+		$options['tab_style'] = $tab_style ? $tab_style : 'independent';
+		$options['subtab_style'] = $subtab_style ? $subtab_style : 'independent';
+		$options['capability'] = $capability ? $capability : 'manage_options';
+		$options['icon_url'] = $icon_url ? $icon_url : '';
+		$options['position'] = $position ? $position : null;
+
+		// Set the options to the class property
+		$this->page_options = $options;
 
 		// Set up the page's callback class.
-		$page_callback = new PageCallbacks;
-		$page_callback->setProperties(array(
-			'id' 				=> $id,
-			'page_title' 		=> $page_title,
-			'menu_title' 		=> $menu_title,
-			'tab_style'			=> $tab_style,
-			'subtab_style'		=> $subtab_style,
+		$this->page_callback = new PageCallbacks;
+		$this->page_callback->setProperties(array(
+			'id' 				=> $this->page_id,
+			'page_title' 		=> $this->page_options['page_title'],
+			'menu_title' 		=> $this->page_options['menu_title'],
+			'tab_style'			=> $this->page_options['tab_style'],
+			'subtab_style'		=> $this->page_options['subtab_style'],
 		));
 
 		// Register with wordpress
-		add_menu_page(
-			$page_title,
-			$menu_title,
-			$capability,
-			$id,
-			array($page_callback, 'callback'),
-			$icon_url,
-			$position
-		);
+		add_action('admin_menu', array($this, 'registerPage'));
 
 		// Makes it's contents
-		$this->makeChildren($contents, $page_callback);
+		$this->makeChildren(
+			$this->page_options['contents'], 
+			$this->page_callback
+		);
+	}
+
+	/**
+	 * This is the method called by wordpress at the admin_menu action hook to register the page.
+	 */
+	public function registerPage()
+	{
+		add_menu_page(
+			$this->page_options['page_title'],
+			$this->page_options['menu_title'],
+			$this->page_options['capability'],
+			$this->page_id,
+			array($this->page_callback, 'callback'),
+			$this->page_options['icon_url'],
+			$this->page_options['position']
+		);
 	}
 
 }

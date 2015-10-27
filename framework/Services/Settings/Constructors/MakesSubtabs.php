@@ -9,7 +9,7 @@ use Baseline\Services\Settings\Callbacks\SubtabCallbacks;
 
 class MakesSubtabs {
 
-	use IsSingleton, RegistersChildren;
+	use RegistersChildren;
 
 	/**
 	 * Holds the setting prefix defined in the framework config.
@@ -26,16 +26,13 @@ class MakesSubtabs {
 	/**
 	 * Constructs the class and sets all of the properties.
 	 */
-	private function __construct()
+	public function __construct()
 	{
 		// Set the prefix.
 		$this->setting_prefix = Config::getInstance()->getFrameworkConfig('setting_prefix');
 
 		// Set the validation class.
 		$this->validator = ValidatesSettingOptions::getInstance();
-
-		// Set the constructor class.
-		$this->section = MakesSections::getInstance();
 	}
 
 	public function make($id, $options, $parent)
@@ -59,7 +56,8 @@ class MakesSubtabs {
 			'id'		=> $id,
 			'display'	=> $display,
 			'tab'		=> $parent->options['id'],
-			'page'		=> $page
+			'page'		=> $page,
+			'subtab_style' => $parent->options['subtab_style']
 		));
 
 		// Register the Subtab with its parent.

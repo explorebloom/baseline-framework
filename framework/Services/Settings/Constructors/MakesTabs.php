@@ -9,7 +9,7 @@ use Baseline\Services\Settings\Traits\RegistersChildren;
 
 class MakesTabs {
 
-	use IsSingleton, RegistersChildren;
+	use RegistersChildren;
 
 	/**
 	 * Holds the setting prefix defined in the framework config.
@@ -27,17 +27,13 @@ class MakesTabs {
 	/**
 	 * Constructs the class and sets all of the properties.
 	 */
-	private function __construct()
+	public function __construct()
 	{
 		// Set the prefix.
 		$this->setting_prefix = Config::getInstance()->getFrameworkConfig('setting_prefix');
 
 		// Set the validation class.
 		$this->validator = ValidatesSettingOptions::getInstance();
-
-		// Set the constructor classes.
-		$this->subtab = MakesSubtabs::getInstance();
-		$this->section = MakesSections::getInstance();
 	}
 
 	public function make($id, $options, $parent)

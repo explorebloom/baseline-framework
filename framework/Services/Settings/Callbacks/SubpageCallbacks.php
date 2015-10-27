@@ -46,15 +46,11 @@ class SubpageCallbacks {
 	{
 		echo '<h1>' . $this->options['page_title'] . '</h1>';
 
-		// echo '<pre>';
-		// var_dump($this->options);
-		// echo '</pre>';
 		if ($this->options['tab_style'] == 'subpages') {
 			$this->makeTabsFromSiblings($this->options['id']);
 		}
 
-		if ($this->child_type == 'tab' && $this->options['tabs'] == 'independent') {
-
+		if ($this->child_type == 'tab' && $this->options['tab_style'] == 'independent') {
 			// Make the tabs.
 			$this->tabs();
 

@@ -24,16 +24,6 @@ class MakesSettingObjects {
 	use IsSingleton;
 
 	/**
-	 * Holds the instance of our page constructor
-	 */
-	protected $page;
-
-	/**
-	 * Holds an instance of our subpage constructor.
-	 */
-	protected $subpage;
-
-	/**
 	 * Holds an instance of our section constructor.
 	 */
 	protected $section;
@@ -45,9 +35,6 @@ class MakesSettingObjects {
 	private function __construct()
 	{
 		$this->validator = ValidatesSettingOptions::getInstance();
-		$this->page = MakesPages::getInstance();
-		$this->subpage = MakesSubpages::getInstance();
-		$this->section = MakesSections::getInstance();
 	}
 
 	/**
@@ -82,13 +69,16 @@ class MakesSettingObjects {
 			// Call the necesarry constructor based off of the type.
 			if ($options['type'] === 'page') {
 				// Make a page
-				$this->page->make($id, $options);
+				$page = new MakesPages;
+				$page->make($id, $options);
 			} else if ($options['type'] === 'subpage') {
 				// Make a subpage
-				$this->subpage->make($id, $options, null, false);
+				$subpage = new MakesSubpages;
+				$subpage->make($id, $options, null, false);
 			} else if ($options['type'] === 'section') {
 				// Make a section
-				$this->section->make($id, $options, null);
+				$section = new MakesSections;
+				$section->make($id, $options, null);
 			}
 
 		}

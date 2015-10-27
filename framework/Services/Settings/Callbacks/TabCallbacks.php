@@ -39,7 +39,7 @@ class TabCallbacks {
 	 */
 	public function callback()
 	{
-		if ($this->child_type === 'subtab') {
+		if ($this->child_type === 'subtab' && $this->options['subtab_style'] == 'independent') {
 
 			// Display the subtabs.
 			$this->subtabs();

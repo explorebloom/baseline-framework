@@ -4,7 +4,7 @@ namespace Baseline\Registrars;
 use Baseline\Core\Config;
 use Baseline\Helper\IsSingleton;
 use Baseline\Services\Settings\MakesSettingObjects;
-use Baseline\Services\Settings\Constructors\MakesSettings;
+use Baseline\Services\Settings\Constructors\MakesSections;
 
 class SettingsRegistrar {
 
@@ -52,12 +52,10 @@ class SettingsRegistrar {
 	 * Registers all of the different settings that the framework needs to build up.
 	 */
 	public function register()
-	{
-		// Adds all of the registered settings to the registered settings array.
-		$this->addRegisterSettings($this->settings_config);
-		
+	{	
 		// Register all of the settings from the config file.
-		add_action('admin_menu', array($this, 'registerSettingsFromConfig'));
+		// add_action('admin_menu', array($this, 'registerSettingsFromConfig'));
+		$this->registerSettingsFromConfig();
 
 		// Register all of the additional settings.
 		add_action('admin_menu', array($this, 'registerAdditionalSettings'));
@@ -70,7 +68,6 @@ class SettingsRegistrar {
 	{
 		// Creates all of the settings using the wordpress's Settings API
 		$this->settings->make($this->settings_config);
-
 	}
 
 	/**
@@ -82,16 +79,12 @@ class SettingsRegistrar {
 	}
 
 	/**
-	 * Adds a registered setting to the property from a Setting Constuctor.
+	 * Adds a registered setting section to the property from a Setting Section Constuctor.
 	 */
-	private function addRegisterSettings($settings_object)
+	public function registerSettingSection($section_object, $id, $options)
 	{
-		foreach ($settings_object as $id => $options) {
-			if ($options['type'] == 'setting') {
-				$this->registered_settings[$id] = $options;
-			} else if ($options['contents']) {
-				$this->addRegisterSettings($options['contents']);
-			}
+		if ($section_object instanceof MakesSections) {
+			$this->registered_settings[$id] = $options;
 		}
 	}
 
