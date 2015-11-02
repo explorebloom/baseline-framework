@@ -27,9 +27,9 @@ class TextareaField {
 	private function makeTextareaField($class)
 	{
 		echo '<fieldset>';
-		echo '<label>' . $this->options['before'] . '</label>';
+		echo $this->options['before'];
 		$this->makeInput($class);
-		echo '<lable>' . $this->options['after'] . '</label>';
+		echo $this->options['after'];
 		$this->makeSubtitle();
 		echo '<fieldset>';
 	}
