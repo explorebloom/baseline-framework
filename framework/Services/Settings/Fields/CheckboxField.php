@@ -43,9 +43,13 @@ class CheckboxField {
 						echo ' ' . $attribute . '="' . $value . '"';
 					}
 				}
+
+				// Is the section an array? If not nothing is checked and we don't have to even bother checking if it is checked.
+				if (is_array($section_settings)) {
+					echo checked( 1, $section_settings[$this->options['id'] . '_' . $value], false );
+				}
 				
-				echo checked( 1, $section_settings[$this->options['id'] . '_' . $value], false );
-			echo '>';
+				echo '>';
 			echo $label;
 		echo '</label><br>';
 	}
