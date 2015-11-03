@@ -181,6 +181,13 @@ class Settings {
 	{
 		// Will put updated settings here.
 		$new_settings = array();
+
+		// Check to make sure the setting has been set.
+		if (!is_array($setting_section)) {
+			return false;
+		}
+
+		// Loop over and remove the prefix.
 		foreach($setting_section as $id => $value) {
 			$id = str_replace($this->setting_prefix, '', $id);
 			$new_settings[$id] = $value;
