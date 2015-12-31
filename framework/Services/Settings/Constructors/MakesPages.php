@@ -81,7 +81,8 @@ class MakesPages {
 		));
 
 		// Register with wordpress
-		add_action('admin_menu', array($this, 'registerPage'));
+		$this->registerPage();
+		// add_action('admin_menu', array($this, 'registerPage'));
 
 		// Makes it's contents
 		$this->makeChildren(

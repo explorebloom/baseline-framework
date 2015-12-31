@@ -65,7 +65,8 @@ class MakesSettings {
 		));
 
 
-		add_action('admin_init', array($this, 'registerSetting'));
+		// add_action('admin_init', array($this, 'registerSetting'));
+		$this->registerSetting();
 	}
 
 	public function registerSetting()

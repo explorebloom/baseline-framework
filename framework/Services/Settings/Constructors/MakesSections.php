@@ -82,10 +82,12 @@ class MakesSections {
 		}
 
 		// Create the Section with the Wordpress Settings Api.
-		add_action('admin_init', array($this, 'addSection'));
+		$this->addSection();
+		// add_action('admin_init', array($this, 'addSection'));
 
 		// Register it later when all of it's children are registered.
-		add_action('admin_init', array($this, 'registerSection'), 11);
+		$this->registerSection();
+		// add_action('admin_init', array($this, 'registerSection'), 11);
 		
 		// Register the setting section with the setting registrar.
 		SettingsRegistrar::getInstance()->registerSettingSection($this, $this->section_id, $this->section_options);

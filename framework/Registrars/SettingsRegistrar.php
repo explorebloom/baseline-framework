@@ -13,7 +13,7 @@ class SettingsRegistrar {
 	/**
 	 * Holds all of the settings that are in the settings config file.
 	 */
-	protected $settings_config;
+	protected $config;
 
 	/**
 	 * The settings prefix that is used for all database items.
@@ -35,11 +35,9 @@ class SettingsRegistrar {
 	 */
 	private function __construct()
 	{
-		// Get an instance of config.
-		$config = Config::getInstance();
 
-		// Set the settings config data from the config file.
-		$this->settings_config = $config->getSettingsConfig();
+		// Set the config object as a property.
+		$this->config = Config::getInstance();
 
 		// Set the settings prefix from the framework config.
 		$this->setting_prefix = $config->getFrameworkConfig('setting_prefix');
@@ -54,8 +52,8 @@ class SettingsRegistrar {
 	public function register()
 	{	
 		// Register all of the settings from the config file.
-		// add_action('admin_menu', array($this, 'registerSettingsFromConfig'));
-		$this->registerSettingsFromConfig();
+		add_action('admin_menu', array($this, 'registerSettingsFromConfig'));
+		// $this->registerSettingsFromConfig();
 
 		// Register all of the additional settings.
 		add_action('admin_menu', array($this, 'registerAdditionalSettings'));
@@ -67,7 +65,8 @@ class SettingsRegistrar {
 	public function registerSettingsFromConfig()
 	{
 		// Creates all of the settings using the wordpress's Settings API
-		$this->settings->make($this->settings_config);
+		$settings_config = $this->config->getSettingsConfig();
+		$this->settings->make($settings_config);
 	}
 
 	/**

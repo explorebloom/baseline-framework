@@ -97,7 +97,8 @@ class MakesSubpages {
 		}
 
 		// Register the page with wordpress.
-		add_action('admin_menu', array($this, 'registerSubpage'));
+		$this->registerSubpage();
+		// add_action('admin_menu', array($this, 'registerSubpage'));
 
 		// Makes its contents.
 		$this->makeChildren($contents, $this->subpage_callback);
