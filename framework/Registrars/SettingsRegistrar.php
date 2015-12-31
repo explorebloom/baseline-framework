@@ -40,7 +40,7 @@ class SettingsRegistrar {
 		$this->config = Config::getInstance();
 
 		// Set the settings prefix from the framework config.
-		$this->setting_prefix = $config->getFrameworkConfig('setting_prefix');
+		$this->setting_prefix = $this->config->getFrameworkConfig('setting_prefix');
 
 		// Create an instance of the settings class.
 		$this->settings = MakesSettingObjects::getInstance();
