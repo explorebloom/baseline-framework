@@ -57,7 +57,7 @@ class MakesCustomizerFields {
 	 * @param string $type
 	 * @param string $parent
 	 */
-	public function register($objects, $storage_type, $parent = null, $prefix = null, $wp_customize = null)
+	public function register($objects, $storage_type = 'option', $parent = null, $prefix = null, $wp_customize = null)
 	{
 		// Get the helper classes.
 		$this->validator = ValidatesCustomizerOptions::getInstance();
