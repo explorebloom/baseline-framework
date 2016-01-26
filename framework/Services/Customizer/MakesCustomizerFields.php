@@ -72,6 +72,11 @@ class MakesCustomizerFields {
 			$this->setting_prefix = $prefix;
 		}
 
+		// Check to make sure the parent has the prefix added.
+		if (strpos($parent, $this->setting_prefix) === false || strpos($parent, $this->setting_prefix) > 0) {
+			$parent = $this->setting_prefix . $parent;
+		}
+
 		// Loop over the array of objects and register them.
 		foreach($objects as $id => $options) {
 			
