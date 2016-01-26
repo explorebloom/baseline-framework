@@ -50,13 +50,9 @@ class SettingsRegistrar {
 	 * Registers all of the different settings that the framework needs to build up.
 	 */
 	public function register()
-	{	
+	{
 		// Register all of the settings from the config file.
 		add_action('admin_menu', array($this, 'registerSettingsFromConfig'));
-		// $this->registerSettingsFromConfig();
-
-		// Register all of the additional settings.
-		add_action('admin_menu', array($this, 'registerAdditionalSettings'));
 	}
 
 	/**
@@ -67,15 +63,11 @@ class SettingsRegistrar {
 		// Creates all of the settings using the wordpress's Settings API
 		$settings_config = $this->config->getSettingsConfig();
 		$this->settings->make($settings_config);
+
+		// Allow Child themes and plugins to add to the settings registration.
+		do_action('baseline_settings_register', $this->settings);
 	}
 
-	/**
-	 * Handles registering all other additional settings that are called within the theme outside of the config files.
-	 */
-	public function registerAdditionalSettings()
-	{
-		// Will implement later.
-	}
 
 	/**
 	 * Adds a registered setting section to the property from a Setting Section Constuctor.

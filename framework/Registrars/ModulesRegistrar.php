@@ -112,7 +112,8 @@ class ModulesRegistrar {
 	 */
 	private function registerLocalCategories()
 	{
-		$category_array = $this->config->getCategoriesConfig();
+		$category_array = apply_filters('baseline_module_categories', $this->config->getCategoriesConfig());
+
 		foreach($category_array as $category_class_name) {
 			$this->validateAndRegisterCategory($category_class_name);
 		}
@@ -123,7 +124,7 @@ class ModulesRegistrar {
 	 */
 	private function registerLocalModules()
 	{
-		$modules_array = $this->config->getModulesConfig();
+		$modules_array = apply_filters('baseline_content_modules',  $this->config->getModulesConfig());
 		foreach($modules_array as $module_class_name) {
 			$this->validateAndRegisterModule($module_class_name);
 		}

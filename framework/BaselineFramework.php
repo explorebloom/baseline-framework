@@ -26,6 +26,11 @@ class BaselineFramework {
 	use IsSingleton;
 
 	/**
+	 * Holds the path to the config file.
+	 */
+	protected $config_path = false;
+
+	/**
 	 * Instance of the config class that handles fetching information from the config files.
 	 */
 	protected $config = false;
@@ -51,17 +56,24 @@ class BaselineFramework {
 	 */
 	private function __construct($config_path)
 	{
+		$this->config_path = $config_path;
+		add_action('after_setup_theme', array($this, 'initialize'));
+
+	}
+
+	public function initialize()
+	{
 		// Initialize the Config right away and confirm the config path.
-		$this->config = Config::getInstance($config_path);
+		$this->config = Config::getInstance($this->config_path);
 
 		// Initialize the Settings Class right away.
 		$this->settings = Settings::getInstance();
-
+		
 		// Register everything after functions.php has executed.
-		add_action('after_setup_theme', array($this, 'initializeFrameworkRegistration'));
+		$this->initializeFrameworkRegistration();
 
 		// Register the Content Class after everything is Registered.
-		add_action('after_setup_theme', array($this, 'initializeContentClass'));
+		$this->initializeContentClass();
 	}
 
 	/**

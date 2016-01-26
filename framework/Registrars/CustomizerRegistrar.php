@@ -87,9 +87,6 @@ class CustomizerRegistrar {
 	{
 		// Register all of the registered customizer settings.
 		add_action('customize_register', array($this, 'registerCustomizerSettings'));
-
-		// Register all of the external customizer settings.
-		add_action('customize_register', array($this, 'additionalCustomizerSettings'));
 	}
 
 	/**
@@ -119,19 +116,9 @@ class CustomizerRegistrar {
 				$wp_customize
 			);
 		}
-	}
 
-	/**
-	 * Main function for registering all of the of the customizer settings from the theme.
-	 *
-	 * @param $wp_customize.
-	 */
-	public function additionalCustomizerSettings() {
-
-		// First overwrite customizer settings with modifications made by the theme.
-
-		// Then overwrite customizer settings with modifications made by a child theme.
-
+		// Allow Child themes and plugins to add to the customizer registration.
+		do_action('baseline_customizer_register', $this->customizer);
 	}
 
 }
