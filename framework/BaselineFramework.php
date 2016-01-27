@@ -57,17 +57,19 @@ class BaselineFramework {
 	private function __construct($config_path)
 	{
 		$this->config_path = $config_path;
-		add_action('after_setup_theme', array($this, 'initialize'));
 
-	}
-
-	public function initialize()
-	{
 		// Initialize the Config right away and confirm the config path.
 		$this->config = Config::getInstance($this->config_path);
-
-		// Initialize the Settings Class right away.
+		
+		// Initialize the Settings Class right away for use in the theme setup.
 		$this->settings = Settings::getInstance();
+		
+		// Register everthing after the theme is setup
+		add_action('after_setup_theme', array($this, 'initializeRegistration'));
+	}
+
+	public function initializeRegistration()
+	{
 		
 		// Register everything after functions.php has executed.
 		$this->initializeFrameworkRegistration();

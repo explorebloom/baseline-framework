@@ -73,7 +73,7 @@ class MakesCustomizerFields {
 		}
 
 		// Check to make sure the parent has the prefix added.
-		if (strpos($parent, $this->setting_prefix) === false || strpos($parent, $this->setting_prefix) > 0) {
+		if (!is_null($parent) && strpos($parent, $this->setting_prefix) === false || strpos($parent, $this->setting_prefix) > 0) {
 			$parent = $this->setting_prefix . $parent;
 		}
 
