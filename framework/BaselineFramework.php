@@ -65,7 +65,7 @@ class BaselineFramework {
 		$this->settings = Settings::getInstance();
 		
 		// Register everthing after the theme is setup
-		add_action('after_setup_theme', array($this, 'initializeRegistration'));
+		add_action('init', array($this, 'initializeRegistration'));
 	}
 
 	public function initializeRegistration()
