@@ -11,7 +11,10 @@ class Html5Field {
 	public function __construct($options)
 	{
 		$this->options = $options;
+		echo $this->options['before'];
 		$this->makeHtml5Field();
+		echo $this->options['after'];
+
 	}
 
 	private function makeHtml5Field()
