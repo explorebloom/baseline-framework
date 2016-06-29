@@ -49,7 +49,10 @@ class PageCallbacks {
 	 */
 	public function callback()
 	{
+
 		if ($this->child_type != 'subpage') {
+			// Open up the page wrap.
+			echo '<div class="wrap">';
 			echo '<h1>' . $this->options['page_title'] . '</h1>';
 		}
 
@@ -73,6 +76,8 @@ class PageCallbacks {
 			$this->sections();
 
 		}
+
+		// Close the page wrap.
 	}
 
 	/**

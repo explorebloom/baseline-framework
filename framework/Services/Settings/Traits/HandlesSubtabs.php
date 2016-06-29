@@ -43,7 +43,7 @@ trait HandlesSubtabs {
 		reset($this->subtabs);
 		
 		// Open the Subtab bar
-		echo '<ul class="subsubsub" style="margin-top: -5px;">';
+		echo '<ul class="subsubsub">';
 		
 		foreach ($this->subtabs as $id => $callback) {
 			

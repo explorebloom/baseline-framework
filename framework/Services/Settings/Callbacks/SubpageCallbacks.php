@@ -44,6 +44,8 @@ class SubpageCallbacks {
 	 */
 	public function callback()
 	{
+		// Open up the wrap.
+		echo '<div class="wrap">';
 		echo '<h1>' . $this->options['page_title'] . '</h1>';
 
 		if ($this->options['tab_style'] == 'subpages') {
@@ -65,6 +67,8 @@ class SubpageCallbacks {
 			$this->sections();
 
 		}
+
+		echo '</div>';
 	}
 
 	/**
