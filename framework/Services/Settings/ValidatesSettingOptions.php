@@ -67,6 +67,8 @@ class ValidatesSettingOptions {
 			'boxes'	=> false,
 			'select_options' => false,
 			'radio_options' => false,
+			'callable' => false,
+			'custom_content' => false,
 		)
 	);
 

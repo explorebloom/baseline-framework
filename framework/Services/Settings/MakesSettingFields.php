@@ -7,6 +7,7 @@ use Baseline\Services\Settings\Fields\CheckboxField;
 use Baseline\Services\Settings\Fields\SelectField;
 use Baseline\Services\Settings\Fields\RadioField;
 use Baseline\Services\Settings\Fields\Html5Field;
+use Baseline\Services\Settings\Fields\CustomField;
 
 /*
 |--------------------------------------------------------------------------
@@ -83,7 +84,14 @@ class MakesSettingFields {
 			'subtitle' => '',
 			'class' => '',
 			'attributes' => array(),
-		)
+		),
+
+		'custom' => array(
+			'before' => '',
+			'after' => '',
+			'callable'	=> false,
+			'custom_content' => '',
+		),
 
 	);
 
@@ -111,29 +119,34 @@ class MakesSettingFields {
 			return $this->textarea($options['given_options']);
 
 		// Is it set to a checkbox?
-		} else if ($type == 'checkbox') {
+		} elseif ($type == 'checkbox') {
 
 			// Make a checkbox field.
 			return $this->checkbox($options['given_options']);
 
 		// Is it set to select?
-		} else if ($type == 'select') {
+		} elseif ($type == 'select') {
 			
 			// Make a select field.
 			return $this->select($options['given_options']);
 
 		// Is it set to radio?
-		} else if ($type == 'radio') {
+		} elseif ($type == 'radio') {
 
 			// Make a radio field.
 			return $this->radio($options['given_options']);
 		
 		// Is it set to html5
-		} else if ($type == 'html5') {
+		} elseif ($type == 'html5') {
 
 			// Make an html5 field
 			return $this->html5($options['given_options']);
 
+		// Is it set to custom?
+		} elseif ($type == 'custom') {
+
+			// Make a custom field.
+			return $this->custom($options['given_options']);
 		}
 	}
 
@@ -189,6 +202,14 @@ class MakesSettingFields {
 	{
 		$options = $this->setAllDefaults('html5', $options);
 		return new Html5Field($options);
+	}
+
+	/**
+	 * Creates a custom field.
+	 */
+	private function custom($options) {
+		$options = $this->setAllDefaults('custom', $options);
+		return new CustomField($options);
 	}
 
 	/**
